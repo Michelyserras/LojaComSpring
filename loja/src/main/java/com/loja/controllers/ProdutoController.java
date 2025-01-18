@@ -2,6 +2,7 @@ package com.loja.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,19 +27,23 @@ public class ProdutoController {
    @PostMapping("/add")
    public ResponseEntity<ProdutoDto> postMethodName(@RequestBody Produto produto) {
        try{
-              service.addProduto(produto.getNome(), produto.getPreco(), produto.getQuantidadeEstoque(), produto.getDescricao());
+              Produto novoProduto = service.addProduto(produto.getNome(), produto.getPreco(), produto.getQuantidadeEstoque(), produto.getDescricao());
+              
+              System.out.println(" Controller = ID do produto após inserção: " + novoProduto.getId());
+
               ProdutoDto produtoDto = new ProdutoDto(
                      "Produto cadastrado com sucesso",
-                     produto.getId(),
-                     produto.getNome(), 
-                     produto.getPreco(), 
-                     produto.getQuantidadeEstoque(), 
-                     produto.getDescricao());
-
-              return ResponseEntity.ok(produtoDto);
+                     novoProduto.getId(),
+                     novoProduto.getNome(), 
+                     novoProduto.getPreco(), 
+                     novoProduto.getQuantidadeEstoque(), 
+                     novoProduto.getDescricao()
+                     );
+              return ResponseEntity.status(HttpStatus.CREATED).body(produtoDto);
        }catch(Exception e){
-              ProdutoDto produtoDto = new ProdutoDto("Erro ao cadastrar produto");
-              return ResponseEntity.badRequest().body(produtoDto);
+              ProdutoDto produtoDtoErro = null;
+              produtoDtoErro = new ProdutoDto("Erro ao cadastrar produto");
+              return ResponseEntity.badRequest().body(produtoDtoErro);
        }
    }
    

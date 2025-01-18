@@ -3,7 +3,7 @@ package com.loja.entities.dto;
 public class ProdutoDto {
 
     private String mensagem;
-    private Long id;
+    private int id;
     private String nome;
     private Double preco;
     private Integer quantidadeEstoque;
@@ -13,7 +13,7 @@ public class ProdutoDto {
         this.mensagem = mensagem;
     }
 
-    public ProdutoDto(String mensagem, Long id, String nome, Double preco, Integer quantidadeEstoque, String descricao) {
+    public ProdutoDto(String mensagem, int id, String nome, Double preco, Integer quantidadeEstoque, String descricao) {
         this.mensagem = mensagem;
         this.id = id;
         this.nome = nome;
@@ -21,6 +21,7 @@ public class ProdutoDto {
         this.quantidadeEstoque = quantidadeEstoque;
         this.descricao = descricao;
     }
+    
     public String getMensagem() {
         return mensagem;
     }
@@ -29,11 +30,11 @@ public class ProdutoDto {
         this.mensagem = mensagem;
     }
 
-    public Long getId() {
+   public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
