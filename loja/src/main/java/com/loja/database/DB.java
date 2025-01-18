@@ -10,26 +10,26 @@ import java.sql.Connection;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
 
-@Configuration
+@Configuration //anotação para indicar que é uma classe de configuração
 public class DB {
 
     private static Connection conn = null;
 
-//metodo para conectar no banco
-    @Bean
+    //método responsável por gerar uma conexão com o banco
+    @Bean // anotação para indicar que é um metodo de configuração
     public static Connection getConnection(){
             try{
 
-                Properties props = loadProperties(); //então, carregam-se as propriedades do banco
+                Properties props = loadProperties(); //carregam-se as propriedades do banco
                 String url = props.getProperty("url"); //pegando a url do banco
                 conn =  DriverManager.getConnection(url, props); //conectando no banco
-                return conn;
+                return conn; //retornando a conexão
             }catch(SQLException e){
-                throw new DbException(e.getMessage()); //lançando a exceção personalizada
+                throw new DbException(e.getMessage()); //lançando a exceção personalizada caso aconteça algum erro
             }
     }
 
-//metodo para fechar a conexão do banco
+    //metodo para fechar a conexão do banco
     public static void closeConnection(){
         if(conn != null){ //testando se a conexão esta instanciada
             try{
@@ -40,9 +40,9 @@ public class DB {
         }
     }
 
-//metodo para carregar as propriedades do banco
+    //metodo para carregar as propriedades (dados) do banco
     private static Properties loadProperties(){
-        try(FileInputStream fs = new FileInputStream("src/main/resources/application.properties")){
+        try(FileInputStream fs = new FileInputStream("src/main/resources/application.properties")){ //buscando as propriedades do banco
             Properties props = new Properties();
             props.load(fs);
             return props;
