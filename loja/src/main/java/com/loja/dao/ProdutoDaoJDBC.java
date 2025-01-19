@@ -158,6 +158,7 @@ public class ProdutoDaoJDBC implements ProdutoDao{
         } catch (SQLException e) {
             System.err.println("Erro ao buscar produto por id" + e.getMessage());
         }
+        
         return produto;
     }
     
