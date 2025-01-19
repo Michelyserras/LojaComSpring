@@ -1,8 +1,7 @@
 package com.loja.entities.dto;
 
 public class ProdutoDto {
-
-    private String mensagem;
+    
     private int id;
     private String nome;
     private Double preco;
@@ -19,13 +18,6 @@ public class ProdutoDto {
         this.descricao = descricao;
     }
     
-    public String getMensagem() {
-        return mensagem;
-    }
-
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
-    }
 
    public int getId() {
         return id;

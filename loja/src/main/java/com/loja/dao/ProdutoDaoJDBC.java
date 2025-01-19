@@ -27,7 +27,7 @@ public class ProdutoDaoJDBC implements ProdutoDao{
         criarTabela();
     }
 
-     public void criarTabela() {
+    public void criarTabela() {
         String query = """
             CREATE TABLE IF NOT EXISTS produtos (
                 id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -45,7 +45,7 @@ public class ProdutoDaoJDBC implements ProdutoDao{
         }
     }
 
-       @Override
+    @Override
     public Produto adicionarProduto(Produto produto) throws SQLException {
         String query = "INSERT INTO produtos (nome, preco, quantidade, descricao) VALUES (?,?,?,?)";
     
@@ -87,8 +87,8 @@ public class ProdutoDaoJDBC implements ProdutoDao{
        String query = "DELETE FROM produtos WHERE ID = ?";
        try(Connection conn = DB.getConnection();
        PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setLong(0, id);
-            ps.execute();
+            ps.setLong(1, id);
+            ps.executeUpdate();
             System.out.println("Produto removido com sucesso!");
             
        } catch (SQLException e) {
@@ -171,4 +171,6 @@ public class ProdutoDaoJDBC implements ProdutoDao{
         }
         return false;
     }
+
+   
 }

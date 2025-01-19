@@ -21,7 +21,7 @@ public class ProdutoService {
     
         try {
           
-          if(repo.produtoExiste(nome)){
+          if(repo.produtoExiste(nome) == true){
                throw new IllegalArgumentException("Produto já existe.");
           }
 
@@ -108,5 +108,20 @@ public class ProdutoService {
           }
      }
 
+     public boolean limparLista() throws SQLException {
+          try {
+               List<Produto> produtos = repo.listarProdutos();
+               if(produtos.size() == 0){
+                    throw new IllegalArgumentException("Não há produtos cadastrados.");
+               }
+               for(Produto p : produtos){
+                    repo.removerProduto(p.getId());
+               }
+          } catch (SQLException e) {
+               System.err.println("Erro ao remover todos os produtos no banco: " + e.getMessage());
+               throw e;
+          }
+          return true;
+     }
 
 }
