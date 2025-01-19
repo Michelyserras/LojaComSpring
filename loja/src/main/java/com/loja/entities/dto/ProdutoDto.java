@@ -9,12 +9,9 @@ public class ProdutoDto {
     private Integer quantidadeEstoque;
     private String descricao;
 
-    public ProdutoDto(String mensagem){
-        this.mensagem = mensagem;
-    }
 
-    public ProdutoDto(String mensagem, int id, String nome, Double preco, Integer quantidadeEstoque, String descricao) {
-        this.mensagem = mensagem;
+
+    public ProdutoDto(int id, String nome, Double preco, Integer quantidadeEstoque, String descricao) {
         this.id = id;
         this.nome = nome;
         this.preco = preco;

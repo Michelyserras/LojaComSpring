@@ -74,7 +74,7 @@ public class ProdutoDaoJDBC implements ProdutoDao{
             }
     
             System.out.println("Produto adicionado com sucesso! ID: " + produto.getId());
-        } catch (SQLException e) {
+        } catch (Error e) {
             System.err.println("Erro ao adicionar produto: " + e.getMessage());
             e.printStackTrace(); // Log do stack trace completo
         }
@@ -83,7 +83,7 @@ public class ProdutoDaoJDBC implements ProdutoDao{
     
 
     @Override
-    public void removerProduto(Long id) throws SQLException {
+    public void removerProduto(int id) throws SQLException {
        String query = "DELETE FROM produtos WHERE ID = ?";
        try(Connection conn = DB.getConnection();
        PreparedStatement ps = conn.prepareStatement(query)) {
@@ -140,7 +140,7 @@ public class ProdutoDaoJDBC implements ProdutoDao{
     }
 
     @Override
-    public Produto buscarProdutoPorId(Long id) throws SQLException {
+    public Produto buscarProdutoPorId(int id) throws SQLException {
         Produto produto = new Produto();
         String query = "SELECT * FROM produtos WHERE id = ?";
         try(Connection conn = DB.getConnection();
