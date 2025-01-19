@@ -4,8 +4,10 @@ import java.util.List;
 import com.loja.entities.Produto;
 
 public interface ProdutoDao {
-    public void adicionarProduto(Produto produto) throws SQLException;
-    public void removerProduto(Long id);
-    public void atualizarProduto(Produto Produto);
-    public List<Produto> listarProdutos();
+    public Produto adicionarProduto(Produto produto) throws SQLException;
+    public void removerProduto(int id) throws SQLException;
+    public void atualizarProduto(Produto Produto) throws SQLException;
+    public List<Produto> listarProdutos() throws SQLException;
+    public Produto buscarProdutoPorId(int id) throws SQLException;
+    public boolean produtoExiste(String nome) throws SQLException;
 }
