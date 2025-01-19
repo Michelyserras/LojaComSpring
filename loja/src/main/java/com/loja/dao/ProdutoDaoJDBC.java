@@ -27,7 +27,7 @@ public class ProdutoDaoJDBC implements ProdutoDao{
         criarTabela();
     }
 
-     public void criarTabela() {
+    public void criarTabela() {
         String query = """
             CREATE TABLE IF NOT EXISTS produtos (
                 id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -46,28 +46,49 @@ public class ProdutoDaoJDBC implements ProdutoDao{
     }
 
     @Override
-    public void adicionarProduto(Produto produto) throws SQLException {
+    public Produto adicionarProduto(Produto produto) throws SQLException {
         String query = "INSERT INTO produtos (nome, preco, quantidade, descricao) VALUES (?,?,?,?)";
-        try(Connection conn = DB.getConnection();
-        PreparedStatement ps = conn.prepareStatement(query)){
+    
+        try (Connection conn = DB.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+    
+            // Define os valores dos parâmetros
             ps.setString(1, produto.getNome());
             ps.setDouble(2, produto.getPreco());
             ps.setInt(3, produto.getQuantidadeEstoque());
             ps.setString(4, produto.getDescricao());
-            ps.execute();
-            System.out.println("Produto adicionado com sucesso!");
-        }catch (SQLException e) {
-            System.err.println("Erro ao adicionar produto." + e.getMessage());
+    
+            // Executa a inserção
+            int rowsAffected = ps.executeUpdate();
+            System.out.println("Linhas afetadas: " + rowsAffected);
+    
+            // Recupera a chave gerada
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    int generatedId = rs.getInt(1);
+                    produto.setId(generatedId); // Define o ID gerado na entidade
+                    System.out.println("ID gerado: " + generatedId);
+                } else {
+                    System.err.println("Nenhuma chave foi gerada!");
+                }
+            }
+    
+            System.out.println("Produto adicionado com sucesso! ID: " + produto.getId());
+        } catch (Error e) {
+            System.err.println("Erro ao adicionar produto: " + e.getMessage());
+            e.printStackTrace(); // Log do stack trace completo
         }
+        return produto;
     }
+    
 
     @Override
-    public void removerProduto(Long id) throws SQLException {
+    public void removerProduto(int id) throws SQLException {
        String query = "DELETE FROM produtos WHERE ID = ?";
        try(Connection conn = DB.getConnection();
        PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setLong(0, id);
-            ps.execute();
+            ps.setLong(1, id);
+            ps.executeUpdate();
             System.out.println("Produto removido com sucesso!");
             
        } catch (SQLException e) {
@@ -103,7 +124,7 @@ public class ProdutoDaoJDBC implements ProdutoDao{
         
             while(rs.next()){
                 Produto produto = new Produto();
-                produto.setId(rs.getLong("id"));
+                produto.setId(rs.getInt("id"));
                 produto.setNome(rs.getString("nome"));
                 produto.setPreco(rs.getDouble("preco"));
                 produto.setQuantidadeEstoque(rs.getInt("quantidade"));
@@ -118,4 +139,39 @@ public class ProdutoDaoJDBC implements ProdutoDao{
         return produtos;
     }
 
+    @Override
+    public Produto buscarProdutoPorId(int id) throws SQLException {
+        Produto produto = new Produto();
+        String query = "SELECT * FROM produtos WHERE id = ?";
+        try(Connection conn = DB.getConnection();
+            PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setLong(1, id);
+            try(ResultSet rs = ps.executeQuery()) {
+                if(rs.next()){
+                    produto.setId(rs.getInt("id"));
+                    produto.setNome(rs.getString("nome"));
+                    produto.setPreco(rs.getDouble("preco"));
+                    produto.setQuantidadeEstoque(rs.getInt("quantidade"));
+                    produto.setDescricao(rs.getString("descricao"));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar produto por id" + e.getMessage());
+        }
+        
+        return produto;
+    }
+    
+    @Override
+    public boolean produtoExiste(String nome) throws SQLException {
+        List<Produto> produtos = listarProdutos();
+        for(Produto p : produtos){
+            if(p.getNome().equals(nome)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+   
 }
