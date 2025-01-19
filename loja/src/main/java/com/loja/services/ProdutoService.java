@@ -17,7 +17,7 @@ public class ProdutoService {
 
     
     public Produto addProduto(String nome, Double preco, Integer quantidade, String descricao) throws SQLException {
-        Produto novoProduto = null; // Inicializa a variável fora do bloco try
+        Produto novoProduto = null; 
     
         try {
           
