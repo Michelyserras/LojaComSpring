@@ -36,18 +36,24 @@ public class ItemDaoJDBC implements ItemDao{
     }
 
     @Override
-    public void adicionarItem(Item item) {
-        String query = "INSERT INTO itens (produto_id, quantidade, preco_total) VALUES (?, ?, ?)";
+    public Item adicionarItem(Item item) {
+        String query = "INSERT INTO itens (produto_id, quantidade) VALUES (?, ?)";
         try (Connection conn = DB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
+             PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             ps.setLong(1, item.getProdutoId());
             ps.setInt(2, item.getQuantidade());
-            ps.setDouble(3, item.getPrecoTotal());
             ps.execute();
+            
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                item.setId(rs.getInt(1));
+            }   
+
             System.out.println("Item adicionado com sucesso.");
         } catch (SQLException e) {
             System.err.println("Erro ao adicionar item: " + e.getMessage());
         }
+        return item;
     }
 
     @Override
@@ -72,10 +78,8 @@ public class ItemDaoJDBC implements ItemDao{
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Item item = new Item();
-                item.setId(rs.getLong("id"));
-                item.setProdutoId(rs.getLong("produto_id"));
+                item.setProdutoId(rs.getInt("produto_id"));
                 item.setQuantidade(rs.getInt("quantidade"));
-                item.setPrecoTotal(rs.getDouble("preco_total"));
                 itens.add(item);
             }
         } catch (SQLException e) {
@@ -85,7 +89,18 @@ public class ItemDaoJDBC implements ItemDao{
     }
 
     @Override
-    public void atualizarItem(Item item) {
-        throw new UnsupportedOperationException("Unimplemented method 'atualizarItem'");
+    public Item atualizarItem(Item item) {
+        String query = "UPDATE itens SET produto_id = ?, quantidade = ?, preco_total = ? WHERE id = ?";
+        try (Connection conn = DB.getConnection();
+        PreparedStatement ps = conn.prepareStatement(query);){
+            ps.setLong(1, item.getProdutoId());
+            ps.setInt(2, item.getQuantidade());
+            ps.setLong(3, item.getId());
+            ps.execute();
+            System.out.println("Item atualizado com sucesso.");
+        } catch (SQLException e) {
+            System.err.println("Erro ao atualizar item: " + e.getMessage());
+        }
+        return item;
     }
 }
