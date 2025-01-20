@@ -7,7 +7,7 @@ import com.loja.entities.Item;
 
 public interface ItemDao {
     public Item adicionarItem(Item item) throws SQLException;
-    public void removerItem(Long id);
-    public Item atualizarItem(Item item);
-    public List<Item> listarItens();
+    public void removerItem(Long id) throws SQLException;
+    public Item atualizarItem(Item item) throws SQLException;
+    public List<Item> listarItens() throws SQLException;
 }

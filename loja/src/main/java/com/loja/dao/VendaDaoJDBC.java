@@ -11,12 +11,6 @@ import java.sql.SQLException;
 import java.util.*;
 import java.sql.ResultSet;
 
-/* COMENTÁRIO ÚTIL PARA VERIFICAR USO DE DATAS E LOCAL DATE
-Não, o LocalDate não existe no SQL, mas é possível converter um LocalDate do Java para um Date do SQL.
-Para converter um LocalDate do Java para um Date do SQL, pode-se usar o método estático valueOf() do sql.Date.
-Para converter um Date do SQL para um LocalDate do Java, pode-se usar o método toLocalDate() do Date.
- */
-
 @Repository
 public class VendaDaoJDBC implements VendaDao{
     private final Connection conn;
@@ -43,17 +37,35 @@ public class VendaDaoJDBC implements VendaDao{
     }
 
     @Override
-    public void adicionarVenda(Venda venda) throws SQLException {
+    public Venda adicionarVenda(Venda venda) throws SQLException {
         String query = "INSERT INTO vendas (dataVenda, totalVenda) VALUES (?, ?)";
+
         try (Connection conn = DB.getConnection();
-        PreparedStatement ps = conn.prepareStatement(query)) {
+        PreparedStatement ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+
             ps.setDate(1, venda.getDataVenda());
             ps.setDouble(2, venda.getTotalVenda());
-            ps.execute();
-            System.out.println("Venda adicionada com sucesso");
+
+            int rowsAffected = ps.executeUpdate();
+            System.out.println("Linhas afetadas: " + rowsAffected);
+
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if(rs.next()) {
+                    int generatedId = rs.getInt(1);
+                    venda.setId(generatedId);
+                    System.out.println("ID gerado: " + generatedId);
+                } else {
+                    System.err.println("Nenhuma chave foi gerada!");
+                }
+            }
+
+            System.out.println("Venda adicionada com sucesso! ID: " + venda.getId());
         } catch (SQLException e) {
             System.err.println("Erro ao adicionar a venda: " + e.getMessage());
+            e.printStackTrace();
         }
+
+        return venda;
     }
 
     @Override
@@ -93,7 +105,7 @@ public class VendaDaoJDBC implements VendaDao{
         ResultSet rs = ps.executeQuery()){
             while (rs.next()) {
                 Venda venda = new Venda();
-                venda.setId(rs.getLong("id"));
+                venda.setId(rs.getInt("id"));
                 venda.setDataVenda(rs.getDate("dataVenda"));
                 venda.setTotalVenda(rs.getDouble("totalVenda"));
                 vendas.add(venda);
@@ -106,7 +118,7 @@ public class VendaDaoJDBC implements VendaDao{
     }
 
     @Override
-    public Venda buscarVendaPorId(Long id) throws SQLException {
+    public Venda buscarVendaPorId(int id) throws SQLException {
         Venda venda = new Venda();
         String query = "SELECT * FROM vendas WHERE id=?";
 
@@ -114,7 +126,7 @@ public class VendaDaoJDBC implements VendaDao{
         PreparedStatement ps = conn.prepareStatement(query);
         ResultSet rs = ps.executeQuery()) {
             if(rs.next()) {
-                venda.setId(rs.getLong("id"));
+                venda.setId(rs.getInt("id"));
                 venda.setDataVenda(rs.getDate("dataVenda"));
                 venda.setTotalVenda(rs.getDouble("totalVenda"));
             }

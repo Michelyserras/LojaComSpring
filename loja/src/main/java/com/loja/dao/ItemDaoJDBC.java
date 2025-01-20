@@ -22,6 +22,7 @@ public class ItemDaoJDBC implements ItemDao{
             CREATE TABLE IF NOT EXISTS loja.itens (
                 id BIGINT AUTO_INCREMENT PRIMARY KEY,
                 produto_id BIGINT NOT NULL,
+                venda_id BIGINT,
                 quantidade INT NOT NULL,
                 preco_total DOUBLE NOT NULL
             )
@@ -36,12 +37,13 @@ public class ItemDaoJDBC implements ItemDao{
     }
 
     @Override
-    public Item adicionarItem(Item item) {
-        String query = "INSERT INTO itens (produto_id, quantidade) VALUES (?, ?)";
+    public Item adicionarItem(Item item) throws SQLException {
+        String query = "INSERT INTO itens (produto_id, venda_id quantidade) VALUES (?, ?, ?)";
         try (Connection conn = DB.getConnection();
              PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             ps.setLong(1, item.getProdutoId());
-            ps.setInt(2, item.getQuantidade());
+            ps.setInt(2, item.getVenda_id());
+            ps.setInt(3, item.getQuantidade());
             ps.execute();
             
             ResultSet rs = ps.getGeneratedKeys();
@@ -57,7 +59,7 @@ public class ItemDaoJDBC implements ItemDao{
     }
 
     @Override
-    public void removerItem(Long id) {
+    public void removerItem(Long id) throws SQLException {
         String query = "DELETE FROM itens WHERE id = ?";
         try (Connection conn = DB.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
@@ -70,7 +72,7 @@ public class ItemDaoJDBC implements ItemDao{
     }
 
     @Override
-    public List<Item> listarItens() {
+    public List<Item> listarItens() throws SQLException {
         String query = "SELECT * FROM itens";
         List<Item> itens = new ArrayList<>();
         try (Connection conn = DB.getConnection();
@@ -89,7 +91,7 @@ public class ItemDaoJDBC implements ItemDao{
     }
 
     @Override
-    public Item atualizarItem(Item item) {
+    public Item atualizarItem(Item item) throws SQLException{
         String query = "UPDATE itens SET produto_id = ?, quantidade = ?, preco_total = ? WHERE id = ?";
         try (Connection conn = DB.getConnection();
         PreparedStatement ps = conn.prepareStatement(query);){

@@ -1,26 +1,32 @@
 package com.loja.entities;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class Venda {
-    private Long id;
-    private java.sql.Date dataVenda = new java.sql.Date(new Date().getTime()); //Gerar data e hora automaticamente
+    private Integer id;
+    private java.sql.Date dataVenda; //Gerar data e hora automaticamente
     private List<Item> itens;
     private Double totalVenda;
 
     public Venda() {}
 
-    public Venda(List<Item> itens, Double totalVenda) {
-        this.itens = itens;
+    public Venda(Double totalVenda) {
+        this.dataVenda = new java.sql.Date(new Date().getTime());
+        this.itens = new ArrayList<>();
         this.totalVenda = totalVenda;
     }
 
-    public Long getId() {
+    public void adicionarItemVenda(Item item) {
+        this.itens.add(item);
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -47,7 +53,5 @@ public class Venda {
     public void setTotalVenda(Double totalVenda) {
         this.totalVenda = totalVenda;
     }
-
-  
     
 }
