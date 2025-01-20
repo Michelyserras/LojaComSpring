@@ -37,13 +37,14 @@ public class ItemDaoJDBC implements ItemDao{
     }
 
     @Override
-    public Item adicionarItem(Item item) throws SQLException {
-        String query = "INSERT INTO itens (produto_id, venda_id quantidade) VALUES (?, ?, ?)";
+    public void adicionarItem(Item item) throws SQLException {
+        String query = "INSERT INTO itens (produto_id, venda_id, quantidade, preco_total) VALUES (?, ?, ?, ?)";
         try (Connection conn = DB.getConnection();
              PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             ps.setLong(1, item.getProdutoId());
             ps.setInt(2, item.getVenda_id());
             ps.setInt(3, item.getQuantidade());
+            ps.setDouble(4, item.getPrecoTotal());
             ps.execute();
             
             ResultSet rs = ps.getGeneratedKeys();
@@ -55,15 +56,14 @@ public class ItemDaoJDBC implements ItemDao{
         } catch (SQLException e) {
             System.err.println("Erro ao adicionar item: " + e.getMessage());
         }
-        return item;
     }
 
     @Override
-    public void removerItem(Long id) throws SQLException {
+    public void removerItem(Integer id) throws SQLException {
         String query = "DELETE FROM itens WHERE id = ?";
         try (Connection conn = DB.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setLong(1, id);
+            ps.setInt(1, id);
             ps.execute();
             System.out.println("Item removido com sucesso.");
         } catch (SQLException e) {
@@ -81,7 +81,9 @@ public class ItemDaoJDBC implements ItemDao{
             while (rs.next()) {
                 Item item = new Item();
                 item.setProdutoId(rs.getInt("produto_id"));
+                item.setVenda_id(rs.getInt("venda_id"));
                 item.setQuantidade(rs.getInt("quantidade"));
+                item.setPrecoTotal(rs.getDouble("preco_total"));
                 itens.add(item);
             }
         } catch (SQLException e) {
@@ -92,12 +94,14 @@ public class ItemDaoJDBC implements ItemDao{
 
     @Override
     public Item atualizarItem(Item item) throws SQLException{
-        String query = "UPDATE itens SET produto_id = ?, quantidade = ?, preco_total = ? WHERE id = ?";
+        String query = "UPDATE itens SET produto_id = ?, venda_id = ?, quantidade = ?, preco_total = ? WHERE id = ?";
         try (Connection conn = DB.getConnection();
         PreparedStatement ps = conn.prepareStatement(query);){
-            ps.setLong(1, item.getProdutoId());
-            ps.setInt(2, item.getQuantidade());
-            ps.setLong(3, item.getId());
+            ps.setInt(1, item.getProdutoId());
+            ps.setInt(2, item.getVenda_id());
+            ps.setInt(3, item.getQuantidade());
+            ps.setDouble(4, item.getPrecoTotal());
+            ps.setInt(5, item.getId());
             ps.execute();
             System.out.println("Item atualizado com sucesso.");
         } catch (SQLException e) {

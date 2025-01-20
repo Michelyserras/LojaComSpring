@@ -5,6 +5,7 @@ public class Item {
     private int produto_id;
     private int venda_id;
     private int quantidade;
+    private double precoTotal;
 
     public Item(){}
 
@@ -12,7 +13,6 @@ public class Item {
         this.produto_id = produto_id;
         this.venda_id = venda_id;
         this.quantidade = quantidade;
-
     }
     
     public int getId() {
@@ -55,5 +55,11 @@ public class Item {
         this.quantidade = quantidade;
     }
 
-    
+    public double getPrecoTotal() {
+        return precoTotal;
+    }
+
+    public void setPrecoTotal(double precoTotal) {
+        this.precoTotal = precoTotal;
+    }
 }

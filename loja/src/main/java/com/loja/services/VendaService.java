@@ -1,5 +1,6 @@
 package com.loja.services;
 
+import com.loja.dao.ItemDaoJDBC;
 import com.loja.dao.VendaDaoJDBC;
 import com.loja.entities.Item;
 import com.loja.entities.Venda;
@@ -13,15 +14,32 @@ import java.util.List;
 public class VendaService {
     @Autowired
     private VendaDaoJDBC repo;
+    @Autowired
+    private ItemDaoJDBC repoItem;
 
-    public void adicionarVenda(Venda venda) throws SQLException {
+    public Venda adicionarVenda(Venda venda) throws SQLException {
         Venda novaVenda = null;
         try {
-            novaVenda = repo.adicionarVenda(venda);
+            try {
+                if(venda.getItens().isEmpty())
+                    throw new IllegalArgumentException("Não é possível adicionar uma venda sem nenhum item");
+
+                for(Item i: venda.getItens()) {
+                    i.setVenda_id(venda.getId()); //Atribui automaticamente o id da venda que o item está ligado
+                    repoItem.adicionarItem(i);//Adiciona os itens da lista da Venda no banco de dados na tabela Item
+                }
+                System.out.println("Todos os itens da lista foram adicionados com sucesso");
+            } catch (SQLException e) {
+                System.err.println("Erro ao adicionar o item no banco: " + e.getMessage());
+                throw e;
+            }
+            novaVenda = repo.adicionarVenda(venda); //Adiciona a venda ao banco de dados
+            System.out.println("Venda adicionada com sucesso.");
         } catch (SQLException e) {
             System.err.println("Erro ao adicionar venda no banco: " + e.getMessage());
             throw e;
         }
+         return novaVenda;
     }
 
     public Venda removerVenda(int id) throws  SQLException {
