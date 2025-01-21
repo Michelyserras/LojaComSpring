@@ -18,12 +18,12 @@ public class VendaDaoJDBC implements VendaDao{
     public VendaDaoJDBC(Connection conn) { this.conn = conn; }
 
     @PostConstruct
-    public void inicializar() { }
+    public void inicializar() { criarTabela(); }
 
     public void criarTabela() {
         String query = """
                 CREATE TABLE IF NOT EXISTS vendas (
-                    id BIGINT AUTO_INCREMENT PRIMERY KEY,
+                    id BIGINT AUTO_INCREMENT PRIMARY KEY,
                     dataVenda DATE NOT NULL,
                     totalVenda DECIMAL(10,2) NOT NULL
                     )
