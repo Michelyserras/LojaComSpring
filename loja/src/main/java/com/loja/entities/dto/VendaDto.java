@@ -9,18 +9,14 @@ import java.util.List;
 public class VendaDto {
     private Integer id;
     private java.sql.Date dataVenda;
-    private List<Item> itens;
+    private List<ItemDto> itensDto;
     private Double totalVenda;
 
-    public VendaDto(Integer id, java.sql.Date dataVenda, List<Item> itens, Double totalVenda) {
+    public VendaDto(Integer id, java.sql.Date dataVenda, List<ItemDto> itensDto, Double totalVenda) {
         this.id = id;
         this.dataVenda = new java.sql.Date(new Date().getTime());
-        this.itens = itens;
+        this.itensDto = itensDto;
         this.totalVenda = totalVenda;
-    }
-
-    public void adicionarItemVenda(Item item) {
-        this.itens.add(item);
     }
 
     public Integer getId() {
@@ -39,12 +35,12 @@ public class VendaDto {
             this.dataVenda = dataVenda;
         }
 
-    public List<Item> getItens() {
-            return itens;
+    public List<ItemDto> getItens() {
+            return itensDto;
         }
 
-    public void setItens(List<Item> itens) {
-            this.itens = itens;
+    public void setItens(List<ItemDto> itens) {
+            this.itensDto = itens;
         }
 
     public Double getTotalVenda() {

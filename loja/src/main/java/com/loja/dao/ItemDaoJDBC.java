@@ -19,12 +19,11 @@ public class ItemDaoJDBC implements ItemDao{
 
     public void criarTabela() {
         String query = """
-            CREATE TABLE IF NOT EXISTS loja.itens (
+            CREATE TABLE IF NOT EXISTS item (
                 id BIGINT AUTO_INCREMENT PRIMARY KEY,
                 produto_id BIGINT NOT NULL,
                 venda_id BIGINT,
                 quantidade INT NOT NULL,
-                preco_total DOUBLE NOT NULL,
                 FOREIGN KEY (produto_id) REFERENCES produto(id),
                 FOREIGN KEY (venda_id) REFERENCES venda(id)
             )
@@ -40,7 +39,7 @@ public class ItemDaoJDBC implements ItemDao{
 
     @Override
     public void adicionarItem(Integer vendaId, List<Item> itens) throws SQLException {
-        String sql = "INSERT INTO item_venda (produto_id, venda_id, quantidade, preco_total) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO item_venda (produto_id, venda_id, quantidade) VALUES (?, ?, ?)";
 
         try (Connection conn = DB.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -49,7 +48,6 @@ public class ItemDaoJDBC implements ItemDao{
                 ps.setLong(1, item.getProdutoId());
                 ps.setLong(2, vendaId);
                 ps.setInt(3, item.getQuantidade());
-                ps.setDouble(4, item.getPrecoTotal());
                 ps.addBatch();
             }
 
@@ -86,7 +84,6 @@ public class ItemDaoJDBC implements ItemDao{
                 item.setProdutoId(rs.getInt("produto_id"));
                 item.setVenda_id(rs.getInt("venda_id"));
                 item.setQuantidade(rs.getInt("quantidade"));
-                item.setPrecoTotal(rs.getDouble("preco_total"));
                 itens.add(item);
             }
         } catch (SQLException e) {
@@ -103,7 +100,6 @@ public class ItemDaoJDBC implements ItemDao{
             ps.setInt(1, item.getProdutoId());
             ps.setInt(2, item.getVenda_id());
             ps.setInt(3, item.getQuantidade());
-            ps.setDouble(4, item.getPrecoTotal());
             ps.setInt(5, item.getId());
             ps.execute();
             System.out.println("Item atualizado com sucesso.");

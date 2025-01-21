@@ -3,11 +3,14 @@ package com.loja.entities.dto;
 public class ItemDto {
     private int id;
     private int produto_id;
+    private int venda_id;
     private int quantidade;
  
     
-    public ItemDto(int produto_id, int quantidade) {
+    public ItemDto(int id, int produto_id, int venda_id, int quantidade) {
+        this.id = id;
         this.produto_id = produto_id;
+        this.venda_id = venda_id;
         this.quantidade = quantidade;
     }
 

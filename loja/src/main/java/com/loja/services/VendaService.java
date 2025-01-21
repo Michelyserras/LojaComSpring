@@ -14,8 +14,6 @@ import java.util.List;
 public class VendaService {
     @Autowired
     private VendaDaoJDBC repo;
-    @Autowired
-    private ItemDaoJDBC repoItem;
 
     public Venda adicionarVenda(Venda venda) throws SQLException {
         Venda novaVenda = null;
