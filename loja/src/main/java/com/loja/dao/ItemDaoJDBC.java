@@ -19,13 +19,13 @@ public class ItemDaoJDBC implements ItemDao{
 
     public void criarTabela() {
         String query = """
-            CREATE TABLE IF NOT EXISTS item (
+            CREATE TABLE IF NOT EXISTS itens (
                 id BIGINT AUTO_INCREMENT PRIMARY KEY,
                 produto_id BIGINT NOT NULL,
                 venda_id BIGINT,
                 quantidade INT NOT NULL,
-                FOREIGN KEY (produto_id) REFERENCES produto(id),
-                FOREIGN KEY (venda_id) REFERENCES venda(id)
+                FOREIGN KEY (produto_id) REFERENCES produtos(id),
+                FOREIGN KEY (venda_id) REFERENCES vendas(id)
             )
         """;
         try (Connection conn = DB.getConnection();

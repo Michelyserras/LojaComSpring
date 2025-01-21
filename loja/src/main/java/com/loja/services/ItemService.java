@@ -6,10 +6,12 @@ import com.loja.entities.Item;
 import com.loja.entities.Produto;
 import com.loja.entities.dto.ItemDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.List;
 
+@Service
 public class ItemService {
     @Autowired
     private ItemDaoJDBC repo;
