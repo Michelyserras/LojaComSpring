@@ -20,19 +20,6 @@ public class VendaService {
     public Venda adicionarVenda(Venda venda) throws SQLException {
         Venda novaVenda = null;
         try {
-            try {
-                if(venda.getItens().isEmpty())
-                    throw new IllegalArgumentException("Não é possível adicionar uma venda sem nenhum item");
-
-                for(Item i: venda.getItens()) {
-                    i.setVenda_id(venda.getId()); //Atribui automaticamente o id da venda que o item está ligado
-                    repoItem.adicionarItem(i);//Adiciona os itens da lista da Venda no banco de dados na tabela Item
-                }
-                System.out.println("Todos os itens da lista foram adicionados com sucesso");
-            } catch (SQLException e) {
-                System.err.println("Erro ao adicionar o item no banco: " + e.getMessage());
-                throw e;
-            }
             novaVenda = repo.adicionarVenda(venda); //Adiciona a venda ao banco de dados
             System.out.println("Venda adicionada com sucesso.");
         } catch (SQLException e) {

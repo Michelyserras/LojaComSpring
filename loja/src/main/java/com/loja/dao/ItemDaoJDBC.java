@@ -24,7 +24,9 @@ public class ItemDaoJDBC implements ItemDao{
                 produto_id BIGINT NOT NULL,
                 venda_id BIGINT,
                 quantidade INT NOT NULL,
-                preco_total DOUBLE NOT NULL
+                preco_total DOUBLE NOT NULL,
+                FOREIGN KEY (produto_id) REFERENCES produto(id),
+                FOREIGN KEY (venda_id) REFERENCES venda(id)
             )
         """;
         try (Connection conn = DB.getConnection();
@@ -37,21 +39,22 @@ public class ItemDaoJDBC implements ItemDao{
     }
 
     @Override
-    public void adicionarItem(Item item) throws SQLException {
-        String query = "INSERT INTO itens (produto_id, venda_id, quantidade, preco_total) VALUES (?, ?, ?, ?)";
-        try (Connection conn = DB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setLong(1, item.getProdutoId());
-            ps.setInt(2, item.getVenda_id());
-            ps.setInt(3, item.getQuantidade());
-            ps.setDouble(4, item.getPrecoTotal());
-            ps.execute();
-            
-            ResultSet rs = ps.getGeneratedKeys();
-            if (rs.next()) {
-                item.setId(rs.getInt(1));
-            }   
+    public void adicionarItem(Integer vendaId, List<Item> itens) throws SQLException {
+        String sql = "INSERT INTO item_venda (produto_id, venda_id, quantidade, preco_total) VALUES (?, ?, ?, ?)";
 
+        try (Connection conn = DB.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            for (Item item : itens) {
+                ps.setLong(1, item.getProdutoId());
+                ps.setLong(2, vendaId);
+                ps.setInt(3, item.getQuantidade());
+                ps.setDouble(4, item.getPrecoTotal());
+                ps.addBatch();
+            }
+
+            ps.executeBatch();
+            ps.close();
             System.out.println("Item adicionado com sucesso.");
         } catch (SQLException e) {
             System.err.println("Erro ao adicionar item: " + e.getMessage());

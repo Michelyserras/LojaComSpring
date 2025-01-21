@@ -3,6 +3,7 @@ package com.loja.dao;
 import com.loja.database.DB;
 import com.loja.entities.Venda;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -13,6 +14,9 @@ import java.sql.ResultSet;
 
 @Repository
 public class VendaDaoJDBC implements VendaDao{
+    @Autowired
+    private ItemDaoJDBC repoItem;
+
     private final Connection conn;
 
     public VendaDaoJDBC(Connection conn) { this.conn = conn; }
@@ -52,7 +56,7 @@ public class VendaDaoJDBC implements VendaDao{
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if(rs.next()) {
                     int generatedId = rs.getInt(1);
-                    venda.setId(generatedId);
+                    repoItem.adicionarItem(venda.getId(), venda.getItens());
                     System.out.println("ID gerado: " + generatedId);
                 } else {
                     System.err.println("Nenhuma chave foi gerada!");
