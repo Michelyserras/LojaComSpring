@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,7 +20,7 @@ public class ItemService {
     private ProdutoDaoJDBC repoProduto;
 
     public List<ItemDto> adicionarItem(int vendaId, List<Item> itens) throws SQLException {
-        List<ItemDto> itensDto = null;
+        List<ItemDto> itensDto = new ArrayList<>();
 
         try {
             for(Item item: itens){
@@ -35,6 +36,7 @@ public class ItemService {
                 }
 
                 produtoExiste.setQuantidadeEstoque(produtoExiste.getQuantidadeEstoque() - item.getQuantidade()); //Atualiza o estoque do produto
+                item.setVenda_id(vendaId);
 
                 ItemDto itemDto = new ItemDto(
                         item.getId(),

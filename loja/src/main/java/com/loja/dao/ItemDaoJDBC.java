@@ -39,7 +39,7 @@ public class ItemDaoJDBC implements ItemDao{
 
     @Override
     public void adicionarItem(Integer vendaId, List<Item> itens) throws SQLException {
-        String sql = "INSERT INTO item_venda (produto_id, venda_id, quantidade) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO itens (produto_id, venda_id, quantidade) VALUES (?, ?, ?)";
 
         try (Connection conn = DB.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {

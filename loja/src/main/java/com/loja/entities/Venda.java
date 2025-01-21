@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Venda {
-    private Integer id;
+    private int id;
     private java.sql.Date dataVenda; //Gerar data e hora automaticamente
     private List<Item> itens;
     private Double totalVenda;
@@ -21,11 +21,11 @@ public class Venda {
         this.itens.add(item);
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

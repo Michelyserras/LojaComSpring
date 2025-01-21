@@ -1,8 +1,10 @@
 package com.loja.services;
 
 import com.loja.dao.ItemDaoJDBC;
+import com.loja.dao.ProdutoDaoJDBC;
 import com.loja.dao.VendaDaoJDBC;
 import com.loja.entities.Item;
+import com.loja.entities.Produto;
 import com.loja.entities.Venda;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,10 +16,20 @@ import java.util.List;
 public class VendaService {
     @Autowired
     private VendaDaoJDBC repo;
+    @Autowired
+    private ProdutoDaoJDBC repoProduto;
 
     public Venda adicionarVenda(Venda venda) throws SQLException {
         Venda novaVenda = null;
         try {
+            Double totalVenda = null;
+            Produto produtoExistente;
+            for(Item item: venda.getItens()){
+                produtoExistente = repoProduto.buscarProdutoPorId(item.getProduto_id());
+                totalVenda = item.getQuantidade() * produtoExistente.getPreco();
+            }
+
+            venda.setTotalVenda(totalVenda);
             novaVenda = repo.adicionarVenda(venda); //Adiciona a venda ao banco de dados
             System.out.println("Venda adicionada com sucesso.");
         } catch (SQLException e) {

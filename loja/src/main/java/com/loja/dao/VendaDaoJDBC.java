@@ -53,6 +53,7 @@ public class VendaDaoJDBC implements VendaDao{
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if(rs.next()) {
                     int generatedId = rs.getInt(1);
+                    venda.setId(generatedId);
                     System.out.println("ID gerado: " + generatedId);
                 } else {
                     System.err.println("Nenhuma chave foi gerada!");
