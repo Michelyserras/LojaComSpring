@@ -20,6 +20,9 @@ public class ItemService {
     private ProdutoDaoJDBC repoProduto;
 
     public List<Item> adicionarItem(int vendaId, List<Item> itens) throws SQLException {
+        List<Item> novosItens = new ArrayList<>();
+        Item novoItem = null;
+
         try {
             for(Item item: itens){
                 Produto produtoExiste = repoProduto.buscarProdutoPorId(item.getProduto_id());
@@ -32,15 +35,15 @@ public class ItemService {
                 if(item.getQuantidade() > produtoExiste.getQuantidadeEstoque()){
                     throw new IllegalArgumentException("Não há estoque suficiente");
                 }
-
+                Item i = new Item(item.getProduto_id(), vendaId, item.getQuantidade());
+                novoItem = repo.adicionarItem(i);
+                novosItens.add(novoItem);
                 produtoExiste.setQuantidadeEstoque(produtoExiste.getQuantidadeEstoque() - item.getQuantidade()); //Atualiza o estoque do produto
             }
-
-            repo.adicionarItem(vendaId, itens);
         } catch (SQLException e) {
             System.err.println("Erro ao adicionar o item no banco: " + e.getMessage());
         }
 
-        return itens;
+        return novosItens;
     }
 }

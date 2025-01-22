@@ -38,25 +38,39 @@ public class ItemDaoJDBC implements ItemDao{
     }
 
     @Override
-    public void adicionarItem(Integer vendaId, List<Item> itens) throws SQLException {
-        String sql = "INSERT INTO itens (produto_id, venda_id, quantidade) VALUES (?, ?, ?)";
+    public Item adicionarItem(Item item) throws SQLException {
+        String query = "INSERT INTO itens (produto_id, venda_id, quantidade) VALUES (?, ?, ?)";
 
         try (Connection conn = DB.getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql)) {
+        PreparedStatement ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, item.getProduto_id());
+            ps.setInt(2, item.getVenda_id());
+            ps.setInt(3, item.getQuantidade());
 
-            for (Item item : itens) {
-                ps.setLong(1, item.getProdutoId());
-                ps.setLong(2, vendaId);
-                ps.setInt(3, item.getQuantidade());
-                ps.addBatch();
+            int rowsAffected = ps.executeUpdate();
+            System.out.println("Linhas afetadas: " + rowsAffected);
+
+
+            if (rowsAffected > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        int generatedId = rs.getInt(1);
+                        item.setId(generatedId);
+                        System.out.println("ID gerado: " + generatedId);
+                    } else {
+                        System.err.println("Nenhuma chave foi gerada!");
+                    }
+                }
+            } else {
+                System.err.println("Nenhuma linha foi afetada. A venda não foi inserida.");
             }
 
-            ps.executeBatch();
-            ps.close();
             System.out.println("Item adicionado com sucesso.");
         } catch (SQLException e) {
             System.err.println("Erro ao adicionar item: " + e.getMessage());
         }
+
+        return item;
     }
 
     @Override

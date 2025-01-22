@@ -8,8 +8,9 @@ public class Item {
 
     public Item(){}
 
-    public Item(int produto_id, int quantidade) {
+    public Item(int produto_id, int venda_id, int quantidade) {
         this.produto_id = produto_id;
+        this.venda_id = venda_id;
         this.quantidade = quantidade;
     }
     
