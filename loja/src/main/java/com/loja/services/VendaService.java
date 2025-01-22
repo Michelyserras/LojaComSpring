@@ -19,19 +19,21 @@ public class VendaService {
     @Autowired
     private ProdutoDaoJDBC repoProduto;
 
-    public Venda adicionarVenda(Venda venda) throws SQLException {
+    public Venda adicionarVenda(List<Item> itens) throws SQLException {
         Venda novaVenda = null;
+
         try {
-            Double totalVenda = null;
+            Double totalVenda = 0.0;
             Produto produtoExistente;
-            for(Item item: venda.getItens()){
+            for(Item item: itens){
                 produtoExistente = repoProduto.buscarProdutoPorId(item.getProduto_id());
-                totalVenda = item.getQuantidade() * produtoExistente.getPreco();
+                totalVenda += item.getQuantidade() * produtoExistente.getPreco();
             }
 
+            Venda venda = new Venda(itens);
             venda.setTotalVenda(totalVenda);
             novaVenda = repo.adicionarVenda(venda); //Adiciona a venda ao banco de dados
-            System.out.println("Venda adicionada com sucesso.");
+            System.out.println("Venda adicionada com sucesso." + novaVenda.getDataVenda() + " " + novaVenda.getId() + " " + novaVenda.getItens() + " " + novaVenda.getTotalVenda());
         } catch (SQLException e) {
             System.err.println("Erro ao adicionar venda no banco: " + e.getMessage());
             throw e;

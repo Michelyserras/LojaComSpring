@@ -50,14 +50,19 @@ public class VendaDaoJDBC implements VendaDao{
             int rowsAffected = ps.executeUpdate();
             System.out.println("Linhas afetadas: " + rowsAffected);
 
-            try (ResultSet rs = ps.getGeneratedKeys()) {
-                if(rs.next()) {
-                    int generatedId = rs.getInt(1);
-                    venda.setId(generatedId);
-                    System.out.println("ID gerado: " + generatedId);
-                } else {
-                    System.err.println("Nenhuma chave foi gerada!");
+
+            if (rowsAffected > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        int generatedId = rs.getInt(1);
+                        venda.setId(generatedId);
+                        System.out.println("ID gerado: " + generatedId);
+                    } else {
+                        System.err.println("Nenhuma chave foi gerada!");
+                    }
                 }
+            } else {
+                System.err.println("Nenhuma linha foi afetada. A venda não foi inserida.");
             }
 
             System.out.println("Venda adicionada com sucesso! ID: " + venda.getId());

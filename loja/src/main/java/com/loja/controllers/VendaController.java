@@ -32,9 +32,19 @@ public class VendaController {
     @PostMapping("/add")
     public ResponseEntity<?> adicionarVenda(@RequestBody Venda venda) {
         try {
-            List<ItemDto> itensDto = serviceItem.adicionarItem(venda.getId(), venda.getItens());
+            Venda novaVenda = service.adicionarVenda(venda.getItens());
+            List<Item> itens = serviceItem.adicionarItem(novaVenda.getId(), novaVenda.getItens());
+            List<ItemDto> itensDto = new ArrayList<>();
 
-            Venda novaVenda = service.adicionarVenda(venda);
+            for(Item i: itens){
+                ItemDto itemDto = new ItemDto(
+                        i.getId(),
+                        i.getProduto_id(),
+                        i.getVenda_id(),
+                        i.getQuantidade()
+                );
+                itensDto.add(itemDto);
+            }
 
             VendaDto vendaDto = new VendaDto(
                     novaVenda.getId(),

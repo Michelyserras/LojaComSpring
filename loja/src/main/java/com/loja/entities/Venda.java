@@ -10,7 +10,7 @@ public class Venda {
     private List<Item> itens;
     private Double totalVenda;
 
-    public Venda() {}
+    public Venda () {}
 
     public Venda(List<Item> itens) {
         this.dataVenda = new java.sql.Date(new Date().getTime());

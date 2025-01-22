@@ -19,9 +19,7 @@ public class ItemService {
     @Autowired
     private ProdutoDaoJDBC repoProduto;
 
-    public List<ItemDto> adicionarItem(int vendaId, List<Item> itens) throws SQLException {
-        List<ItemDto> itensDto = new ArrayList<>();
-
+    public List<Item> adicionarItem(int vendaId, List<Item> itens) throws SQLException {
         try {
             for(Item item: itens){
                 Produto produtoExiste = repoProduto.buscarProdutoPorId(item.getProduto_id());
@@ -36,15 +34,6 @@ public class ItemService {
                 }
 
                 produtoExiste.setQuantidadeEstoque(produtoExiste.getQuantidadeEstoque() - item.getQuantidade()); //Atualiza o estoque do produto
-                item.setVenda_id(vendaId);
-
-                ItemDto itemDto = new ItemDto(
-                        item.getId(),
-                        item.getProduto_id(),
-                        vendaId,
-                        item.getQuantidade()
-                );
-                itensDto.add(itemDto);
             }
 
             repo.adicionarItem(vendaId, itens);
@@ -52,6 +41,6 @@ public class ItemService {
             System.err.println("Erro ao adicionar o item no banco: " + e.getMessage());
         }
 
-        return itensDto;
+        return itens;
     }
 }

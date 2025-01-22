@@ -22,7 +22,7 @@ public class ItemDaoJDBC implements ItemDao{
             CREATE TABLE IF NOT EXISTS itens (
                 id BIGINT AUTO_INCREMENT PRIMARY KEY,
                 produto_id BIGINT NOT NULL,
-                venda_id BIGINT,
+                venda_id BIGINT NOT NULL,
                 quantidade INT NOT NULL,
                 FOREIGN KEY (produto_id) REFERENCES produtos(id),
                 FOREIGN KEY (venda_id) REFERENCES vendas(id)
