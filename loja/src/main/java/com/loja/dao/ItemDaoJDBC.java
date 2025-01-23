@@ -19,11 +19,13 @@ public class ItemDaoJDBC implements ItemDao{
 
     public void criarTabela() {
         String query = """
-            CREATE TABLE IF NOT EXISTS loja.itens (
+            CREATE TABLE IF NOT EXISTS itens (
                 id BIGINT AUTO_INCREMENT PRIMARY KEY,
                 produto_id BIGINT NOT NULL,
+                venda_id BIGINT NOT NULL,
                 quantidade INT NOT NULL,
-                preco_total DOUBLE NOT NULL
+                FOREIGN KEY (produto_id) REFERENCES produtos(id),
+                FOREIGN KEY (venda_id) REFERENCES vendas(id)
             )
         """;
         try (Connection conn = DB.getConnection();
@@ -36,32 +38,47 @@ public class ItemDaoJDBC implements ItemDao{
     }
 
     @Override
-    public Item adicionarItem(Item item) {
-        String query = "INSERT INTO itens (produto_id, quantidade) VALUES (?, ?)";
+    public Item adicionarItem(Item item) throws SQLException {
+        String query = "INSERT INTO itens (produto_id, venda_id, quantidade) VALUES (?, ?, ?)";
+
         try (Connection conn = DB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setLong(1, item.getProdutoId());
-            ps.setInt(2, item.getQuantidade());
-            ps.execute();
-            
-            ResultSet rs = ps.getGeneratedKeys();
-            if (rs.next()) {
-                item.setId(rs.getInt(1));
-            }   
+        PreparedStatement ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, item.getProduto_id());
+            ps.setInt(2, item.getVenda_id());
+            ps.setInt(3, item.getQuantidade());
+
+            int rowsAffected = ps.executeUpdate();
+            System.out.println("Linhas afetadas: " + rowsAffected);
+
+
+            if (rowsAffected > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        int generatedId = rs.getInt(1);
+                        item.setId(generatedId);
+                        System.out.println("ID gerado: " + generatedId);
+                    } else {
+                        System.err.println("Nenhuma chave foi gerada!");
+                    }
+                }
+            } else {
+                System.err.println("Nenhuma linha foi afetada. A venda não foi inserida.");
+            }
 
             System.out.println("Item adicionado com sucesso.");
         } catch (SQLException e) {
             System.err.println("Erro ao adicionar item: " + e.getMessage());
         }
+
         return item;
     }
 
     @Override
-    public void removerItem(Long id) {
+    public void removerItem(Integer id) throws SQLException {
         String query = "DELETE FROM itens WHERE id = ?";
         try (Connection conn = DB.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setLong(1, id);
+            ps.setInt(1, id);
             ps.execute();
             System.out.println("Item removido com sucesso.");
         } catch (SQLException e) {
@@ -70,7 +87,7 @@ public class ItemDaoJDBC implements ItemDao{
     }
 
     @Override
-    public List<Item> listarItens() {
+    public List<Item> listarItens() throws SQLException {
         String query = "SELECT * FROM itens";
         List<Item> itens = new ArrayList<>();
         try (Connection conn = DB.getConnection();
@@ -79,6 +96,7 @@ public class ItemDaoJDBC implements ItemDao{
             while (rs.next()) {
                 Item item = new Item();
                 item.setProdutoId(rs.getInt("produto_id"));
+                item.setVenda_id(rs.getInt("venda_id"));
                 item.setQuantidade(rs.getInt("quantidade"));
                 itens.add(item);
             }
@@ -89,13 +107,14 @@ public class ItemDaoJDBC implements ItemDao{
     }
 
     @Override
-    public Item atualizarItem(Item item) {
-        String query = "UPDATE itens SET produto_id = ?, quantidade = ?, preco_total = ? WHERE id = ?";
+    public Item atualizarItem(Item item) throws SQLException{
+        String query = "UPDATE itens SET produto_id = ?, venda_id = ?, quantidade = ?, preco_total = ? WHERE id = ?";
         try (Connection conn = DB.getConnection();
         PreparedStatement ps = conn.prepareStatement(query);){
-            ps.setLong(1, item.getProdutoId());
-            ps.setInt(2, item.getQuantidade());
-            ps.setLong(3, item.getId());
+            ps.setInt(1, item.getProdutoId());
+            ps.setInt(2, item.getVenda_id());
+            ps.setInt(3, item.getQuantidade());
+            ps.setInt(5, item.getId());
             ps.execute();
             System.out.println("Item atualizado com sucesso.");
         } catch (SQLException e) {
