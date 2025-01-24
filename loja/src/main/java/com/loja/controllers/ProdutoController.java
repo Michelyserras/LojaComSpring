@@ -131,7 +131,7 @@ public class ProdutoController {
        }
 
 
-       @PutMapping("atualizar")
+       @PutMapping("/atualizar")
        public ResponseEntity<?> atualizarProduto(@RequestBody Produto produto) {
               try {
                      Produto produtoExiste = service.buscarProduto(produto.getId());
@@ -164,7 +164,7 @@ public class ProdutoController {
        
 
 
-       @DeleteMapping("/LimparLista")
+       @DeleteMapping("/todos")
        public ResponseEntity<?> limparLista() {
               try {
                      boolean listaVazia = service.limparLista();
