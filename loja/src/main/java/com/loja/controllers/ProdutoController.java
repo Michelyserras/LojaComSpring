@@ -13,13 +13,6 @@ import com.loja.entities.dto.ProdutoDto;
 
 import com.loja.services.ProdutoService;
 
-
-
-
-
-
-
-
 @RestController
 @RequestMapping("/produtos")
 public class ProdutoController {
@@ -28,20 +21,12 @@ public class ProdutoController {
     public ProdutoService service;
 
    @PostMapping("/add")
-   public ResponseEntity<?> adicionarProduto(@RequestBody Produto produto) {
+   public ResponseEntity<?> adicionarProduto(@RequestBody ProdutoDto produtoDto) {
               try{
-                     Produto novoProduto = service.addProduto(produto.getNome(), produto.getPreco(), produto.getQuantidadeEstoque(), produto.getDescricao());
-
-                     ProdutoDto produtoDto = new ProdutoDto(
-                            novoProduto.getId(),
-                            novoProduto.getNome(), 
-                            novoProduto.getPreco(), 
-                            novoProduto.getQuantidadeEstoque(), 
-                            novoProduto.getDescricao()
-                            );
+                     Produto novoProduto = service.addProduto(produtoDto.getNome(), produtoDto.getPreco(), produtoDto.getQuantidadeEstoque(), produtoDto.getDescricao());
 
                      Map<String, Object> response = new HashMap<>(); // HashMap para armazenar a resposta
-                     response.put("Produto cadastrado com sucesso!", produtoDto);
+                     response.put("Produto cadastrado com sucesso!", novoProduto);
 
                      return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
@@ -61,15 +46,9 @@ public class ProdutoController {
                      if(produto == null) {
                             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produto não encontrado.");
                      }
-                     ProdutoDto produtoDto = new ProdutoDto(
-                            produto.getId(),
-                            produto.getNome(), 
-                            produto.getPreco(), 
-                            produto.getQuantidadeEstoque(), 
-                            produto.getDescricao()
-                            );
+
                      Map<String, Object> response = new HashMap<>();
-                     response.put("Produto encontrado: ", produtoDto);
+                     response.put("Produto encontrado: ", produto);
 
                      return ResponseEntity.status(HttpStatus.OK).body(response);
 
@@ -87,21 +66,9 @@ public class ProdutoController {
                      if(produtos.isEmpty()) {
                             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não há produtos cadastrados.");
                      }
-                     List<ProdutoDto> produtosDto = new ArrayList<>();
-                     for(Produto produto : produtos) {
-                            ProdutoDto produtoDto = new ProdutoDto(
-                                   produto.getId(),
-                                   produto.getNome(), 
-                                   produto.getPreco(), 
-                                   produto.getQuantidadeEstoque(), 
-                                   produto.getDescricao()
-                                   );
-                            produtosDto.add(produtoDto);
-                     }
-
 
                      Map<String, Object> response = new HashMap<>();
-                     response.put("Produtos Encontrados:", produtosDto);
+                     response.put("Produtos Encontrados:", produtos);
 
                      return ResponseEntity.status(HttpStatus.OK).body(response);
               } catch (SQLException e) {
@@ -142,15 +109,8 @@ public class ProdutoController {
 
                      Produto produtoAtualizado = service.atualizarProduto(produto);
 
-                     ProdutoDto produtoDto = new ProdutoDto(
-                            produtoAtualizado.getId(),
-                            produtoAtualizado.getNome(), 
-                            produtoAtualizado.getPreco(), 
-                            produtoAtualizado.getQuantidadeEstoque(), 
-                            produtoAtualizado.getDescricao()
-                            );
                      Map<String, Object> response = new HashMap<>();
-                     response.put("Produto atualizado com sucesso!", produtoDto);
+                     response.put("Produto atualizado com sucesso!", produtoAtualizado);
 
                      return ResponseEntity.status(HttpStatus.OK).body(response);
               } catch (IllegalArgumentException e) {
@@ -179,6 +139,4 @@ public class ProdutoController {
                      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
               }
        }
-
-
 }
