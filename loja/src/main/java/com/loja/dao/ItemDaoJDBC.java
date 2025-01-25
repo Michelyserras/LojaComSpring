@@ -18,7 +18,8 @@ public class ItemDaoJDBC implements ItemDao{
         criarTabela();
     }
 
-    // ON DELETE CASCADE - Permite que quando uma venda for deletada, todos os itens associados a essa venda também serão deletados
+    // ON DELETE CASCADE - Quando uma venda é deletada, todos os itens vinculados a ela são deletados automaticamente
+    // ON DELETE SET NULL - Quando um produto é deletado, seu id é desvinculado dos itensVenda
     public void criarTabela() {
         String query = """
             CREATE TABLE IF NOT EXISTS itensVenda (
@@ -26,7 +27,9 @@ public class ItemDaoJDBC implements ItemDao{
                 produto_id BIGINT NOT NULL,
                 venda_id BIGINT NOT NULL,
                 quantidade INT NOT NULL,
-                FOREIGN KEY (produto_id) REFERENCES produtos(id),
+                nome_produto VARCHAR(255) NOT NULL,
+                valor_unitario DECIMAL(10,2) NOT NULL,
+                FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE SET NULL,
                 FOREIGN KEY (venda_id) REFERENCES vendas(id) ON DELETE CASCADE
             )
         """;
@@ -41,13 +44,15 @@ public class ItemDaoJDBC implements ItemDao{
 
     @Override
     public ItemVenda adicionarItem(ItemVenda itemVenda) throws SQLException {
-        String query = "INSERT INTO itensVenda (produto_id, venda_id, quantidade) VALUES (?, ?, ?)";
+        String query = "INSERT INTO itensVenda (produto_id, venda_id, quantidade, nome_produto, valor_unitario) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DB.getConnection();
         PreparedStatement ps = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, itemVenda.getProduto_id());
             ps.setInt(2, itemVenda.getVenda_id());
             ps.setInt(3, itemVenda.getQuantidade());
+            ps.setString(4, itemVenda.getNomeProduto());
+            ps.setDouble(5, itemVenda.getValorUnitario());
 
             int rowsAffected = ps.executeUpdate();
             System.out.println("Linhas afetadas: " + rowsAffected);

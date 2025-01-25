@@ -2,6 +2,7 @@ package com.loja.services;
 
 import com.loja.dao.ItemDaoJDBC;
 import com.loja.dao.ProdutoDaoJDBC;
+import com.loja.dao.VendaDaoJDBC;
 import com.loja.entities.ItemVenda;
 import com.loja.entities.Produto;
 import com.loja.entities.Venda;
@@ -41,10 +42,14 @@ public class ItemService {
                 }
 
                 itemVenda.setVenda_id(vendaId); //Seto o id da venda correspondente
+                itemVenda.setNomeProduto(produtoExiste.getNome());
+                itemVenda.setValorUnitario(produtoExiste.getPreco());
 
                 novoItemVenda = repo.adicionarItem(itemVenda); //Adiciono o itemVenda venda no banco de dados
                 novosItens.add(novoItemVenda);
-                produtoExiste.setQuantidadeEstoque(produtoExiste.getQuantidadeEstoque() - itemVenda.getQuantidade());//PRECISA CHAMAR UM UPDATE NO BANCO DE DADOS
+
+                produtoExiste.setQuantidadeEstoque(produtoExiste.getQuantidadeEstoque() - itemVenda.getQuantidade()); //Corrijo quantidade no estoque
+                repoProduto.atualizarProduto(produtoExiste); //Atualizo essa quantidade no banco de dados
             }
         } catch (SQLException e) {
             System.err.println("Erro ao adicionar o item no banco: " + e.getMessage());
@@ -52,18 +57,6 @@ public class ItemService {
 
         return novosItens;
     }
-
-    /*
-    public List<ItemVenda> removerItens(List<ItemVenda> itens) throws SQLException {
-        if(itens == null)
-            return null;
-
-        for(ItemVenda i : itens) {
-            repo.removerItem(i.getId());
-        }
-        return itens;
-    }
-    */
 
     public List<ItemVenda> atualizarItens(List<ItemDto> itensDto, Venda venda) throws SQLException {
         List<ItemVenda> itens = new ArrayList<>();
@@ -94,9 +87,11 @@ public class ItemService {
 
                 ItemVenda novoItemVenda = new ItemVenda(
                         itemDto.getProduto_id(),
-                        itemDto.getQuantidade()
+                        itemDto.getQuantidade(),
+                        produtoExistente.getNome(),
+                        produtoExistente.getPreco()
                 );
-                valorTotal += novoItemVenda.getQuantidade() * produtoExistente.getPreco();
+                valorTotal += novoItemVenda.getQuantidade() * novoItemVenda.getValorUnitario();
                 novoItemVenda.setVenda_id(venda.getId());
 
                 itens.add(novoItemVenda);

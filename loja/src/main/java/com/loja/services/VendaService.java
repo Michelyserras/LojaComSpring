@@ -34,7 +34,9 @@ public class VendaService {
 
                 ItemVenda itemVenda = new ItemVenda(
                         itemDto.getProduto_id(),
-                        itemDto.getQuantidade()
+                        itemDto.getQuantidade(),
+                        produtoExistente.getNome(),
+                        produtoExistente.getPreco()
                 );
                 itens.add(itemVenda);
             }

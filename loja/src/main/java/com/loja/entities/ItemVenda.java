@@ -5,12 +5,16 @@ public class ItemVenda {
     private int produto_id;
     private int venda_id;
     private int quantidade;
+    private String nomeProduto;
+    private Double valorUnitario;
 
     public ItemVenda(){}
 
-    public ItemVenda(int produto_id, int quantidade) {
+    public ItemVenda(int produto_id, int quantidade, String nomeProduto, Double valorUnitario) {
         this.produto_id = produto_id;
         this.quantidade = quantidade;
+        this.nomeProduto = nomeProduto;
+        this.valorUnitario = valorUnitario;
         this.venda_id = 0;
     }
     
@@ -52,5 +56,21 @@ public class ItemVenda {
 
     public void setQuantidade(int quantidade) {
         this.quantidade = quantidade;
+    }
+
+    public String getNomeProduto() {
+        return nomeProduto;
+    }
+
+    public void setNomeProduto(String nomeProduto) {
+        this.nomeProduto = nomeProduto;
+    }
+
+    public Double getValorUnitario() {
+        return valorUnitario;
+    }
+
+    public void setValorUnitario(Double valorUnitario) {
+        this.valorUnitario = valorUnitario;
     }
 }
