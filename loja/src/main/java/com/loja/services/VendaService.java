@@ -53,16 +53,10 @@ public class VendaService {
          return novaVenda;
     }
 
-    public Venda removerVenda(int id) throws  SQLException {
+    public Venda removerVenda(Venda venda) throws  SQLException {
         try {
-            Venda vendaExistente = repo.buscarVendaPorId(id);
-
-            if(vendaExistente == null)
-                throw new IllegalArgumentException("Venda não encontrada");
-            else {
-                repo.removerVenda(vendaExistente);
-                return vendaExistente;
-            }
+            repo.removerVenda(venda);
+            return venda;
         } catch (SQLException e) {
             System.err.println("Erro ao remover a venda no banco: " + e.getMessage());
             throw e;
@@ -73,7 +67,7 @@ public class VendaService {
         try {
             Venda vendaExistente = repo.buscarVendaPorId(id);
             if(vendaExistente == null)
-                throw new IllegalArgumentException("Venda não encontrada");
+                return null;
 
             return vendaExistente;
         } catch (SQLException e) {
@@ -118,9 +112,11 @@ public class VendaService {
         try {
             List<Venda> lista = repo.listarVendas();
             if(lista.isEmpty())
-                throw new IllegalArgumentException("Não há vendas cadastradas");
-            for(Venda v: lista)
-                repo.removerVenda(v);
+                return false;
+            else{
+                for(Venda v: lista)
+                    repo.removerVenda(v);
+            }
         } catch (SQLException e) {
              System.err.println("Erro ao remover todas as vendas no banco: " + e.getMessage());
              throw e;

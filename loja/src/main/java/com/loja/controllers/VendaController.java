@@ -87,7 +87,7 @@ public class VendaController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Venda não encontrada.");
             }
 
-            Venda vendaRemovida = service.removerVenda(id);
+            Venda vendaRemovida = service.removerVenda(venda);
 
             Map<String, Object> response = new HashMap<>();
             response.put("Venda excluida: ", vendaRemovida);
@@ -129,7 +129,7 @@ public class VendaController {
             if(listaVazia) {
                 return ResponseEntity.status(HttpStatus.OK).body("Lista de vendas foi esvaziada.");
             } else{
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possível excluir os produtos.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não há vendas cadastradas");
             }
         } catch (SQLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());

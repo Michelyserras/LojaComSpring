@@ -138,6 +138,8 @@ public class VendaDaoJDBC implements VendaDao{
                     venda.setId(rs.getInt("id"));
                     venda.setDataVenda(rs.getDate("dataVenda"));
                     venda.setTotalVenda(rs.getDouble("totalVenda"));
+                } else {
+                    return null;
                 }
             }
         } catch (SQLException e) {

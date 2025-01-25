@@ -83,9 +83,6 @@ public class ProdutoService {
      public List<Produto> listarProdutos() throws SQLException {
           try {
                List<Produto> lista = repo.listarProdutos();
-               if(lista.isEmpty()) {
-                    throw new IllegalArgumentException("Não há produtos cadastrados.");
-               }
                return lista;
           } catch (SQLException e) {
                System.err.println("Erro ao listar produtos no banco: " + e.getMessage());
@@ -100,7 +97,7 @@ public class ProdutoService {
                     repo.atualizarProduto(produto);
                     return produto;
                } else {
-                    throw new IllegalArgumentException("Produto não encontrado.");
+                    return null;
                }
           }catch(SQLException e){
                System.err.println("Erro ao atualizar produto no banco: " + e.getMessage());
