@@ -121,7 +121,7 @@ public class ProdutoDaoJDBC implements ProdutoDao{
         try(Connection conn = DB.getConnection();
             PreparedStatement ps = conn.prepareStatement(query);
             ResultSet rs = ps.executeQuery()) {
-        
+
             while(rs.next()){
                 Produto produto = new Produto();
                 produto.setId(rs.getInt("id"));
@@ -153,6 +153,8 @@ public class ProdutoDaoJDBC implements ProdutoDao{
                     produto.setPreco(rs.getDouble("preco"));
                     produto.setQuantidadeEstoque(rs.getInt("quantidade"));
                     produto.setDescricao(rs.getString("descricao"));
+                } else{
+                    return null;
                 }
             }
         } catch (SQLException e) {
@@ -172,6 +174,4 @@ public class ProdutoDaoJDBC implements ProdutoDao{
         }
         return false;
     }
-
-   
 }
