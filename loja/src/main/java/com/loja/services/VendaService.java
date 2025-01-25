@@ -93,7 +93,7 @@ public class VendaService {
             Double valorTotal = 0.0;
             for(ItemVenda i : itens){
                 Produto produto = repoProduto.buscarProdutoPorId(i.getProdutoId());
-                valorTotal += i.getQuantidade() * produto.getPreco();
+                valorTotal += i.getQuantidade() * i.getValorUnitario();
             }
 
             Venda vendaAtualizada = new Venda(

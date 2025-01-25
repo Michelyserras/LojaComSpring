@@ -14,7 +14,7 @@ import com.loja.entities.Produto;
 public class ProdutoService {
 
     @Autowired
-    public ProdutoDaoJDBC repo;
+    private ProdutoDaoJDBC repo;
 
 
     public Produto addProduto(String nome, Double preco, Integer quantidade, String descricao) throws SQLException {
@@ -94,6 +94,7 @@ public class ProdutoService {
     public Produto atualizarProduto(ProdutoDto produtoDto, int id) throws SQLException {
         try {
             Produto produtoEncontrado = repo.buscarProdutoPorId(id);
+
             if (produtoEncontrado != null) {
                 Produto produtoAtualizado = new Produto(
                         produtoDto.getNome(),

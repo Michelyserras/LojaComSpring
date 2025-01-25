@@ -77,9 +77,9 @@ public class ItemService {
                 // Atualiza o item existente e incrementa à quantidade
 
                 itemVendaExistente.setQuantidade(itemVendaExistente.getQuantidade() + itemDto.getQuantidade());
-                valorTotal += itemDto.getQuantidade() * produtoExistente.getPreco();
 
-                //PRECISA ALTERAR O ESTOQUE DO PRODUTO AQUI
+                produtoExistente.setQuantidadeEstoque(produtoExistente.getQuantidadeEstoque() - itemDto.getQuantidade());
+                repoProduto.atualizarProduto(produtoExistente);
 
                 repo.atualizarItem(itemVendaExistente);
             } else {
@@ -91,7 +91,6 @@ public class ItemService {
                         produtoExistente.getNome(),
                         produtoExistente.getPreco()
                 );
-                valorTotal += novoItemVenda.getQuantidade() * novoItemVenda.getValorUnitario();
                 novoItemVenda.setVenda_id(venda.getId());
 
                 itens.add(novoItemVenda);

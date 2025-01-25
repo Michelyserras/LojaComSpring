@@ -10,4 +10,5 @@ public interface ItemDao {
     public void removerItem(Integer id) throws SQLException;
     public ItemVenda atualizarItem(ItemVenda itemVenda) throws SQLException;
     public List<ItemVenda> listarItens() throws SQLException;
+    public void desvincularItemProduto(ItemVenda itemVenda) throws SQLException;
 }

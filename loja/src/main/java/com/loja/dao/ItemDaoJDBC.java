@@ -24,7 +24,7 @@ public class ItemDaoJDBC implements ItemDao{
         String query = """
             CREATE TABLE IF NOT EXISTS itensVenda (
                 id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                produto_id BIGINT NOT NULL,
+                produto_id BIGINT,
                 venda_id BIGINT NOT NULL,
                 quantidade INT NOT NULL,
                 nome_produto VARCHAR(255) NOT NULL,
@@ -115,18 +115,30 @@ public class ItemDaoJDBC implements ItemDao{
 
     @Override
     public ItemVenda atualizarItem(ItemVenda itemVenda) throws SQLException{
-        String query = "UPDATE itensVenda SET produto_id = ?, venda_id = ?, quantidade = ?, preco_total = ? WHERE id = ?";
+        String query = "UPDATE itensVenda SET quantidade = ? WHERE id = ?";
         try (Connection conn = DB.getConnection();
         PreparedStatement ps = conn.prepareStatement(query);){
-            ps.setInt(1, itemVenda.getProdutoId());
-            ps.setInt(2, itemVenda.getVenda_id());
-            ps.setInt(3, itemVenda.getQuantidade());
-            ps.setInt(5, itemVenda.getId());
+            ps.setInt(1, itemVenda.getQuantidade());
+            ps.setInt(2, itemVenda.getId());
             ps.execute();
             System.out.println("ItemVenda atualizado com sucesso.");
         } catch (SQLException e) {
             System.err.println("Erro ao atualizar itemVenda: " + e.getMessage());
         }
         return itemVenda;
+    }
+
+    @Override
+    public void desvincularItemProduto(ItemVenda itemVenda) throws SQLException{
+        String query = "UPDATE itensVenda SET produto_id = ? WHERE id = ?";
+        try (Connection conn = DB.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query);){
+            ps.setInt(1, itemVenda.getProdutoId());
+            ps.setInt(2, itemVenda.getId());
+            ps.execute();
+            System.out.println("ItemVenda desvinculado de produto com sucesso.");
+        } catch (SQLException e) {
+            System.err.println("Erro ao atualizar itemVenda: " + e.getMessage());
+        }
     }
 }
