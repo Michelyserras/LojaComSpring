@@ -12,9 +12,10 @@ public class Venda {
 
     public Venda () {}
 
-    public Venda(List<Item> itens) {
+    public Venda(List<Item> itens, Double totalVenda) {
         this.dataVenda = new java.sql.Date(new Date().getTime());
         this.itens = itens;
+        this.totalVenda = totalVenda;
     }
 
     public void adicionarItemVenda(Item item) {

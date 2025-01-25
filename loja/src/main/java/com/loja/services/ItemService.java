@@ -26,19 +26,24 @@ public class ItemService {
         try {
             for(Item item: itens){
                 Produto produtoExiste = repoProduto.buscarProdutoPorId(item.getProduto_id());
+
                 if(produtoExiste == null){
                     throw new IllegalArgumentException("O produto de ID informado não existe");
                 }
+
                 if(item.getQuantidade() <= 0){
                     throw new IllegalArgumentException("A quantidade do item precisa ser maior que 0");
                 }
+
                 if(item.getQuantidade() > produtoExiste.getQuantidadeEstoque()){
                     throw new IllegalArgumentException("Não há estoque suficiente");
                 }
-                Item i = new Item(item.getProduto_id(), vendaId, item.getQuantidade());
-                novoItem = repo.adicionarItem(i);
+
+                item.setVenda_id(vendaId); //Seto o id da venda correspondente
+
+                novoItem = repo.adicionarItem(item); //Adiciono o item venda no banco de dados
                 novosItens.add(novoItem);
-                produtoExiste.setQuantidadeEstoque(produtoExiste.getQuantidadeEstoque() - item.getQuantidade()); //Atualiza o estoque do produto
+                produtoExiste.setQuantidadeEstoque(produtoExiste.getQuantidadeEstoque() - item.getQuantidade());//PRECISA CHAMAR UM UPDATE NO BANCO DE DADOS
             }
         } catch (SQLException e) {
             System.err.println("Erro ao adicionar o item no banco: " + e.getMessage());

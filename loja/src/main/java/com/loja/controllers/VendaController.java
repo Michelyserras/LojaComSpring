@@ -27,31 +27,16 @@ public class VendaController {
     private ItemService serviceItem;
 
     @PostMapping("/add")
-    public ResponseEntity<?> adicionarVenda(@RequestBody Venda venda) {
+    public ResponseEntity<?> adicionarVenda(@RequestBody VendaDto vendaDto) {
         try {
-            Venda novaVenda = service.adicionarVenda(venda.getItens());
+            if(vendaDto.getItensDto().isEmpty())
+                throw new IllegalArgumentException("A lista de itens na venda não pode ser vazia");
+
+            Venda novaVenda = service.adicionarVenda(vendaDto.getItensDto());
             List<Item> itens = serviceItem.adicionarItem(novaVenda.getId(), novaVenda.getItens());
-            List<ItemDto> itensDto = new ArrayList<>();
-
-            for(Item i: itens){
-                ItemDto itemDto = new ItemDto(
-                        i.getId(),
-                        i.getProduto_id(),
-                        i.getVenda_id(),
-                        i.getQuantidade()
-                );
-                itensDto.add(itemDto);
-            }
-
-            VendaDto vendaDto = new VendaDto(
-                    novaVenda.getId(),
-                    novaVenda.getDataVenda(),
-                    itensDto,
-                    novaVenda.getTotalVenda()
-            );
 
             Map<String, Object> response = new HashMap<>();
-            response.put("Venda cadastrada com sucesso!", vendaDto);
+            response.put("Venda cadastrada com sucesso!", novaVenda);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (SQLException e) {
@@ -62,7 +47,7 @@ public class VendaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
         }
     }
-
+/*
     @GetMapping("/buscar")
     public ResponseEntity<?> buscarVendaPorId(@RequestBody int id) {
         try {
@@ -199,4 +184,5 @@ public class VendaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
         }
     }
+    */
 }

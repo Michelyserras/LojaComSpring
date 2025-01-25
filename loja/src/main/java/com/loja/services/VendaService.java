@@ -6,10 +6,12 @@ import com.loja.dao.VendaDaoJDBC;
 import com.loja.entities.Item;
 import com.loja.entities.Produto;
 import com.loja.entities.Venda;
+import com.loja.entities.dto.ItemDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,19 +21,30 @@ public class VendaService {
     @Autowired
     private ProdutoDaoJDBC repoProduto;
 
-    public Venda adicionarVenda(List<Item> itens) throws SQLException {
+    public Venda adicionarVenda(List<ItemDto> itensDto) throws SQLException {
         Venda novaVenda = null;
 
         try {
             Double totalVenda = 0.0;
             Produto produtoExistente;
-            for(Item item: itens){
-                produtoExistente = repoProduto.buscarProdutoPorId(item.getProduto_id());
-                totalVenda += item.getQuantidade() * produtoExistente.getPreco();
+            List<Item> itens = new ArrayList<>();
+
+            for(ItemDto itemDto: itensDto) { //Calcula valor total da venda e transforma DTO na Entidade Item
+                produtoExistente = repoProduto.buscarProdutoPorId(itemDto.getProduto_id());
+                totalVenda += itemDto.getQuantidade() * produtoExistente.getPreco();
+
+                Item item = new Item(
+                        itemDto.getProduto_id(),
+                        itemDto.getQuantidade()
+                );
+                itens.add(item);
             }
 
-            Venda venda = new Venda(itens);
-            venda.setTotalVenda(totalVenda);
+            Venda venda = new Venda( //Instancia venda
+                    itens,
+                    totalVenda
+            );
+
             novaVenda = repo.adicionarVenda(venda); //Adiciona a venda ao banco de dados
             System.out.println("Venda adicionada com sucesso." + novaVenda.getDataVenda() + " " + novaVenda.getId() + " " + novaVenda.getItens() + " " + novaVenda.getTotalVenda());
         } catch (SQLException e) {
