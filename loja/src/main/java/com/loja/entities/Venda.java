@@ -7,19 +7,19 @@ import java.util.List;
 public class Venda {
     private int id;
     private java.sql.Date dataVenda; //Gerar data e hora automaticamente
-    private List<Item> itens;
+    private List<ItemVenda> itens = new ArrayList<>();
     private Double totalVenda;
 
     public Venda () {}
 
-    public Venda(List<Item> itens, Double totalVenda) {
+    public Venda(List<ItemVenda> itens, Double totalVenda) {
         this.dataVenda = new java.sql.Date(new Date().getTime());
         this.itens = itens;
         this.totalVenda = totalVenda;
     }
 
-    public void adicionarItemVenda(Item item) {
-        this.itens.add(item);
+    public void adicionarItemVenda(ItemVenda itemVenda) {
+        this.itens.add(itemVenda);
     }
 
     public int getId() {
@@ -38,11 +38,11 @@ public class Venda {
         this.dataVenda = dataVenda;
     }
 
-    public List<Item> getItens() {
+    public List<ItemVenda> getItens() {
         return itens;
     }
 
-    public void setItens(List<Item> itens) {
+    public void setItens(List<ItemVenda> itens) {
         this.itens = itens;
     }
 

@@ -1,11 +1,9 @@
 package com.loja.controllers;
 
-import com.loja.entities.Item;
+import com.loja.entities.ItemVenda;
 import com.loja.entities.Venda;
-import com.loja.entities.dto.ItemDto;
 import com.loja.entities.dto.VendaDto;
 import com.loja.services.ItemService;
-import com.loja.services.ProdutoService;
 import com.loja.services.VendaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +30,7 @@ public class VendaController {
                 throw new IllegalArgumentException("A lista de itens na venda não pode ser vazia");
 
             Venda novaVenda = service.adicionarVenda(vendaDto.getItensDto());
-            List<Item> itens = serviceItem.adicionarItem(novaVenda.getId(), novaVenda.getItens());
+            List<ItemVenda> itens = serviceItem.adicionarItem(novaVenda.getId(), novaVenda.getItens());
 
             Map<String, Object> response = new HashMap<>();
             response.put("Venda cadastrada com sucesso!", novaVenda);
@@ -85,10 +82,12 @@ public class VendaController {
     @DeleteMapping("/remover")
     public ResponseEntity<?> removerVenda(@RequestParam int id) {
         try {
-            Venda vendaRemovida = service.removerVenda(id);
-            if(vendaRemovida == null) {
+            Venda venda = service.buscarVenda(id);
+            if(venda == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Venda não encontrada.");
             }
+
+            Venda vendaRemovida = service.removerVenda(id);
 
             Map<String, Object> response = new HashMap<>();
             response.put("Venda excluida: ", vendaRemovida);
@@ -99,15 +98,18 @@ public class VendaController {
     }
 
     @PutMapping("/atualizar")
-    public ResponseEntity<?> atualizarVenda(@RequestBody Venda venda) {
+    public ResponseEntity<?> atualizarVenda(@RequestParam int id, @RequestBody VendaDto vendaDto) {
         try {
-            Venda vendaExiste = service.buscarVenda(venda.getId());
+            if(vendaDto == null || vendaDto.getItensDto().isEmpty())
+                throw new IllegalArgumentException("É necessário atualizar pelo menos 1 campo da venda");
 
+            Venda vendaExiste = service.buscarVenda(id);
             if(vendaExiste == null){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Venda não encontrada.");
             }
 
-            Venda vendaAtualizada = service.atualizarVenda(venda);
+            List<ItemVenda> itens = serviceItem.atualizarItens(vendaDto.getItensDto(), vendaExiste);
+            Venda vendaAtualizada = service.atualizarVenda(itens, id);
 
             Map<String, Object> response = new HashMap<>();
             response.put("Venda atualizada com sucesso!", vendaAtualizada);

@@ -94,6 +94,7 @@ public class VendaDaoJDBC implements VendaDao{
         PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setDate(1, venda.getDataVenda());
             ps.setDouble(2, venda.getTotalVenda());
+            ps.setInt(3, venda.getId());
             ps.execute();
             System.out.println("Venda atualizada com sucesso");
         } catch (SQLException e) {
@@ -129,12 +130,15 @@ public class VendaDaoJDBC implements VendaDao{
         String query = "SELECT * FROM vendas WHERE id=?";
 
         try (Connection conn = DB.getConnection();
-        PreparedStatement ps = conn.prepareStatement(query);
-        ResultSet rs = ps.executeQuery()) {
-            if(rs.next()) {
-                venda.setId(rs.getInt("id"));
-                venda.setDataVenda(rs.getDate("dataVenda"));
-                venda.setTotalVenda(rs.getDouble("totalVenda"));
+        PreparedStatement ps = conn.prepareStatement(query)){
+            ps.setInt(1, id);
+
+            try(ResultSet rs = ps.executeQuery()){
+                if(rs.next()) {
+                    venda.setId(rs.getInt("id"));
+                    venda.setDataVenda(rs.getDate("dataVenda"));
+                    venda.setTotalVenda(rs.getDouble("totalVenda"));
+                }
             }
         } catch (SQLException e) {
             System.err.println("Erro ao buscar a venda: " + e.getMessage());

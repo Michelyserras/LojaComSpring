@@ -1,9 +1,8 @@
 package com.loja.services;
 
-import com.loja.dao.ItemDaoJDBC;
 import com.loja.dao.ProdutoDaoJDBC;
 import com.loja.dao.VendaDaoJDBC;
-import com.loja.entities.Item;
+import com.loja.entities.ItemVenda;
 import com.loja.entities.Produto;
 import com.loja.entities.Venda;
 import com.loja.entities.dto.ItemDto;
@@ -27,17 +26,17 @@ public class VendaService {
         try {
             Double totalVenda = 0.0;
             Produto produtoExistente;
-            List<Item> itens = new ArrayList<>();
+            List<ItemVenda> itens = new ArrayList<>();
 
-            for(ItemDto itemDto: itensDto) { //Calcula valor total da venda e transforma DTO na Entidade Item
+            for(ItemDto itemDto: itensDto) { //Calcula valor total da venda e transforma DTO na Entidade ItemVenda
                 produtoExistente = repoProduto.buscarProdutoPorId(itemDto.getProduto_id());
                 totalVenda += itemDto.getQuantidade() * produtoExistente.getPreco();
 
-                Item item = new Item(
+                ItemVenda itemVenda = new ItemVenda(
                         itemDto.getProduto_id(),
                         itemDto.getQuantidade()
                 );
-                itens.add(item);
+                itens.add(itemVenda);
             }
 
             Venda venda = new Venda( //Instancia venda
@@ -86,8 +85,6 @@ public class VendaService {
     public List<Venda> listarVendas() throws SQLException {
         try {
             List<Venda> lista = repo.listarVendas();
-            if(lista.isEmpty())
-                throw new IllegalArgumentException("Não há vendas cadastradas");
             return lista;
         } catch (SQLException e) {
             System.err.println("Erro ao listar vendas no banco: " + e.getMessage());
@@ -95,15 +92,22 @@ public class VendaService {
         }
     }
 
-    public Venda atualizarVenda(Venda venda) throws SQLException {
+    public Venda atualizarVenda(List<ItemVenda> itens, int id) throws SQLException {
         try {
-            Venda vendaExistente = repo.buscarVendaPorId(venda.getId());
-            if(vendaExistente == null)
-                throw new IllegalArgumentException("Venda não encontrada");
-            else {
-                repo.atualizarVenda(venda);
-                return venda;
+            Double valorTotal = 0.0;
+            for(ItemVenda i : itens){
+                Produto produto = repoProduto.buscarProdutoPorId(i.getProdutoId());
+                valorTotal += i.getQuantidade() * produto.getPreco();
             }
+
+            Venda vendaAtualizada = new Venda(
+                    itens,
+                    valorTotal
+            );
+
+            vendaAtualizada.setId(id);
+            repo.atualizarVenda(vendaAtualizada);
+            return vendaAtualizada;
         } catch (SQLException e) {
             System.err.println("Erro ao atualizar venda no banco: " + e.getMessage());
             throw  e;
