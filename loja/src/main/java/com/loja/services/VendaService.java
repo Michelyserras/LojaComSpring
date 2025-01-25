@@ -75,7 +75,7 @@ public class VendaService {
             Venda vendaExistente = repo.buscarVendaPorId(id);
             if(vendaExistente == null)
                 throw new IllegalArgumentException("Venda não encontrada");
-S
+
             return vendaExistente;
         } catch (SQLException e) {
             System.err.println("Erro ao buscar venda no banco: " + e.getMessage());
