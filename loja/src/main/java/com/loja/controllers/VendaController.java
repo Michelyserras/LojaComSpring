@@ -47,32 +47,17 @@ public class VendaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
         }
     }
-/*
+
     @GetMapping("/buscar")
-    public ResponseEntity<?> buscarVendaPorId(@RequestBody int id) {
+    public ResponseEntity<?> buscarVendaPorId(@RequestParam int id) {
         try {
             Venda venda = service.buscarVenda(id);
             if(venda == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Venda não encontrada.");
             }
-            List<ItemDto> itensDto = new ArrayList<>();
-            for(Item i : venda.getItens()){
-                ItemDto itemDto = new ItemDto();
-                itemDto.setId(i.getId());
-                itemDto.setProdutoId(i.getProdutoId());
-                itemDto.setVenda_id(i.getVenda_id());
-                itemDto.setQuantidade(i.getQuantidade());
-                itensDto.add(itemDto);
-            }
 
-            VendaDto vendaDto = new VendaDto(
-                    venda.getId(),
-                    venda.getDataVenda(),
-                    itensDto,
-                    venda.getTotalVenda()
-            );
             Map<String, Object> reponse = new HashMap<>();
-            reponse.put("Venda encontrada: ", vendaDto);
+            reponse.put("Venda encontrada: ", venda);
 
             return ResponseEntity.status(HttpStatus.OK).body(reponse);
         } catch (SQLException e) {
@@ -88,28 +73,8 @@ public class VendaController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não há vendas cadastradas.");
             }
 
-            List<VendaDto> vendasDto = new ArrayList<>();
-            for(Venda venda : vendas) {
-                List<ItemDto> itensDto = new ArrayList<>();
-                for(Item i : venda.getItens()){
-                    ItemDto itemDto = new ItemDto();
-                    itemDto.setId(i.getId());
-                    itemDto.setProdutoId(i.getProdutoId());
-                    itemDto.setVenda_id(i.getVenda_id());
-                    itemDto.setQuantidade(i.getQuantidade());
-                    itensDto.add(itemDto);
-                }
-
-                VendaDto vendaDto = new VendaDto(
-                        venda.getId(),
-                        venda.getDataVenda(),
-                        itensDto,
-                        venda.getTotalVenda()
-                );
-                vendasDto.add(vendaDto);
-            }
             Map<String, Object> response = new HashMap<>();
-            response.put("Vendas encontradas: ", vendasDto);
+            response.put("Vendas encontradas: ", vendas);
 
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (SQLException e) {
@@ -144,24 +109,8 @@ public class VendaController {
 
             Venda vendaAtualizada = service.atualizarVenda(venda);
 
-            List<ItemDto> itensDto = new ArrayList<>();
-            for(Item i : vendaAtualizada.getItens()){
-                ItemDto itemDto = new ItemDto();
-                itemDto.setId(i.getId());
-                itemDto.setProdutoId(i.getProdutoId());
-                itemDto.setVenda_id(i.getVenda_id());
-                itemDto.setQuantidade(i.getQuantidade());
-                itensDto.add(itemDto);
-            }
-
-            VendaDto vendaDto = new VendaDto(
-                    vendaAtualizada.getId(),
-                    vendaAtualizada.getDataVenda(),
-                    itensDto,
-                    vendaAtualizada.getTotalVenda()
-            );
             Map<String, Object> response = new HashMap<>();
-            response.put("Venda atualizada com sucesso!", vendaDto);
+            response.put("Venda atualizada com sucesso!", vendaAtualizada);
 
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (IllegalArgumentException e) {
@@ -184,5 +133,4 @@ public class VendaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
         }
     }
-    */
 }
