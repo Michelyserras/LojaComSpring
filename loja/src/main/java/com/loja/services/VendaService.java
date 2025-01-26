@@ -87,10 +87,11 @@ public class VendaService {
     public Venda buscarVenda(int id) throws SQLException {
         try {
             Venda vendaExistente = repo.buscarVendaPorId(id);
-            if(vendaExistente == null)
+            if(vendaExistente == null){
                 return null;
-
+            }
             return vendaExistente;
+            
         } catch (SQLException e) {
             System.err.println("Erro ao buscar venda no banco: " + e.getMessage());
             throw e;

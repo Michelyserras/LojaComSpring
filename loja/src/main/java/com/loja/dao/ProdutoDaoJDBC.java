@@ -142,10 +142,9 @@ public class ProdutoDaoJDBC implements ProdutoDao{
     @Override
     public Produto buscarProdutoPorId(int id) throws SQLException {
         String query = "SELECT * FROM produtos WHERE id = ?";
-
+        
         try(Connection conn = DB.getConnection();
             PreparedStatement ps = conn.prepareStatement(query)) {
-                
             ps.setLong(1, id);
             try(ResultSet rs = ps.executeQuery()) {
                 if(rs.next()){

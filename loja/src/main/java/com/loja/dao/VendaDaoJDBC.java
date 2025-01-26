@@ -134,7 +134,7 @@ public class VendaDaoJDBC implements VendaDao{
 
     @Override
     public Venda buscarVendaPorId(int id) throws SQLException {
-        Venda venda = new Venda();
+    
         String query = "SELECT * FROM vendas WHERE id=?";
 
         try (Connection conn = DB.getConnection();
@@ -143,9 +143,12 @@ public class VendaDaoJDBC implements VendaDao{
 
             try(ResultSet rs = ps.executeQuery()){
                 if(rs.next()) {
+                    Venda venda = new Venda();
                     venda.setId(rs.getInt("id"));
                     venda.setDataVenda(rs.getDate("dataVenda"));
                     venda.setTotalVenda(rs.getDouble("totalVenda"));
+                    venda.setItens(item.buscarItemPorVenda(venda.getId()));
+                    return venda;
                 } else {
                     return null;
                 }
@@ -153,8 +156,7 @@ public class VendaDaoJDBC implements VendaDao{
         } catch (SQLException e) {
             System.err.println("Erro ao buscar a venda: " + e.getMessage());
         }
-
-        return venda;
+        return null;
     }
 
     
