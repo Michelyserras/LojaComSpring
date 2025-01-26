@@ -45,6 +45,15 @@ public class VendaService {
                     throw new IllegalArgumentException("A venda não pode ser processada: o produto com o id = " + itemDto.getProduto_id() + " não existe.");
                 }
 
+                if(produtoExistente.getQuantidadeEstoque() < itemDto.getQuantidade()){
+                    throw new IllegalArgumentException("Estoque do produto = " + produtoExistente.getNome() +" é insuficiente.");
+                }
+
+                if (itemDto.getQuantidade() <= 0) {
+                    throw new IllegalArgumentException("Quantidade tem que ser maior que zero.");
+                }
+
+
                 totalVenda += itemDto.getQuantidade() * produtoExistente.getPreco();
 
                 ItemVenda itemVenda = new ItemVenda(
@@ -53,9 +62,7 @@ public class VendaService {
                         produtoExistente.getNome(),
                         produtoExistente.getPreco()
                 );
-                if (itemDto.getQuantidade() <= 0) {
-                    throw new IllegalArgumentException("Quantidade tem que ser maior que zero.");
-                }
+               
     
                 itens.add(itemVenda);
             }
@@ -88,10 +95,10 @@ public class VendaService {
         try {
             Venda vendaExistente = repo.buscarVendaPorId(id);
             if(vendaExistente == null){
-                return null;
+                throw new IllegalArgumentException("Venda com id = " + id + " não existe.");
             }
             return vendaExistente;
-            
+
         } catch (SQLException e) {
             System.err.println("Erro ao buscar venda no banco: " + e.getMessage());
             throw e;

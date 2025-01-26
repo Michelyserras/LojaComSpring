@@ -37,10 +37,6 @@ public class ItemService {
                     throw new IllegalArgumentException("O produto de ID " + itemVenda.getProduto_id() + " não existe.");
                 }
     
-                if (itemVenda.getQuantidade() > produtoExiste.getQuantidadeEstoque()) {
-                    throw new IllegalArgumentException("Não há estoque suficiente para o produto de ID " + itemVenda.getProduto_id());
-                }
-    
                 // Atualiza os dados do itemVenda
                 itemVenda.setVenda_id(vendaId);
                 itemVenda.setNomeProduto(produtoExiste.getNome());

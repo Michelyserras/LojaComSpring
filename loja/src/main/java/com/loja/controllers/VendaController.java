@@ -52,9 +52,6 @@ public class VendaController {
     public ResponseEntity<?> buscarVendaPorId(@RequestParam int id) {
         try {
             Venda venda = service.buscarVenda(id);
-            if(venda == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Venda não encontrada.");
-            }
 
             VendaResp vendaFormatada = new VendaResp(venda);
             Map<String, Object> reponse = new HashMap<>();
@@ -63,6 +60,10 @@ public class VendaController {
             return ResponseEntity.status(HttpStatus.OK).body(reponse);
         } catch (SQLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
         }
     }
 
@@ -86,6 +87,10 @@ public class VendaController {
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (SQLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
         }
     }
 
@@ -105,8 +110,11 @@ public class VendaController {
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (SQLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
-        }
-    }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
+        }    }
 
     @PutMapping("/atualizar")
     public ResponseEntity<?> atualizarVenda(@RequestParam int id, @RequestBody VendaDto vendaDto) {
@@ -127,10 +135,12 @@ public class VendaController {
             response.put("Venda atualizada com sucesso!", vendaFormatada);
 
             return ResponseEntity.status(HttpStatus.OK).body(response);
+        }catch (SQLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (SQLException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
         }
     }
 
@@ -145,6 +155,10 @@ public class VendaController {
             }
         } catch (SQLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
         }
     }
 }
