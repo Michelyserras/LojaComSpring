@@ -8,7 +8,7 @@ public class Produto {
     private Integer quantidadeEstoque;
     private String descricao;
 
-    public Produto() {}
+    public Produto () {}
 
     public Produto(String nome, Double preco, Integer quantidadeEstoque, String descricao) {
         this.nome = nome;

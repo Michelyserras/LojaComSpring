@@ -1,31 +1,12 @@
 package com.loja.entities.dto;
 
 public class ProdutoDto {
-    
-    private int id;
     private String nome;
     private Double preco;
     private Integer quantidadeEstoque;
     private String descricao;
 
-
-
-    public ProdutoDto(int id, String nome, Double preco, Integer quantidadeEstoque, String descricao) {
-        this.id = id;
-        this.nome = nome;
-        this.preco = preco;
-        this.quantidadeEstoque = quantidadeEstoque;
-        this.descricao = descricao;
-    }
-    
-
-   public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
+    public ProdutoDto() { }
 
     public String getNome() {
         return nome;
