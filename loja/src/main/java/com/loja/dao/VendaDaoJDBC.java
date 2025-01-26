@@ -11,13 +11,20 @@ import java.sql.SQLException;
 import java.util.*;
 import java.sql.ResultSet;
 
+import com.loja.dao.*;
+
 @Repository
 public class VendaDaoJDBC implements VendaDao{
-
+    private ItemDaoJDBC item;
     private final Connection conn;
 
-    public VendaDaoJDBC(Connection conn) { this.conn = conn; }
+    //public VendaDaoJDBC(Connection conn) { this.conn = conn; }
 
+    public VendaDaoJDBC(ItemDaoJDBC item) {
+        this.item = item;
+        this.conn = DB.getConnection(); // Initialize the conn field
+    }
+    
     @PostConstruct
     public void inicializar() { criarTabela(); }
 
@@ -115,6 +122,7 @@ public class VendaDaoJDBC implements VendaDao{
                 venda.setId(rs.getInt("id"));
                 venda.setDataVenda(rs.getDate("dataVenda"));
                 venda.setTotalVenda(rs.getDouble("totalVenda"));
+                venda.setItens(item.buscarItemPorVenda(venda.getId()));
                 vendas.add(venda);
             }
         } catch (SQLException e) {
@@ -148,4 +156,6 @@ public class VendaDaoJDBC implements VendaDao{
 
         return venda;
     }
+
+    
 }

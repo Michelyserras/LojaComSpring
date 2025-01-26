@@ -1,5 +1,6 @@
 package com.loja.services;
 
+import com.loja.dao.ItemDaoJDBC;
 import com.loja.dao.ProdutoDaoJDBC;
 import com.loja.dao.VendaDaoJDBC;
 import com.loja.entities.ItemVenda;
@@ -19,11 +20,20 @@ public class VendaService {
     private VendaDaoJDBC repo;
     @Autowired
     private ProdutoDaoJDBC repoProduto;
+    @Autowired
+    private ItemDaoJDBC item;
+   
+
 
     public Venda adicionarVenda(List<ItemDto> itensDto) throws SQLException {
         Venda novaVenda = null;
 
         try {
+
+            if (itensDto == null || itensDto.isEmpty()) {
+                throw new IllegalArgumentException("Adicione pelo menos um item para realizar uma compra.");
+            }
+
             Double totalVenda = 0.0;
             Produto produtoExistente;
             List<ItemVenda> itens = new ArrayList<>();
@@ -38,6 +48,10 @@ public class VendaService {
                         produtoExistente.getNome(),
                         produtoExistente.getPreco()
                 );
+                if (itemDto.getQuantidade() <= 0) {
+                    throw new IllegalArgumentException("Quantidade tem que ser maior que zero.");
+                }
+    
                 itens.add(itemVenda);
             }
 
@@ -45,6 +59,12 @@ public class VendaService {
                     itens,
                     totalVenda
             );
+
+            /*essa função retorna a lista de itens de cada venda, 
+            depois de setar os itens da venda é possivel retornar a lista
+            e fazer os dados do item aparecer */
+
+            
 
             novaVenda = repo.adicionarVenda(venda); //Adiciona a venda ao banco de dados
             System.out.println("Venda adicionada com sucesso." + novaVenda.getDataVenda() + " " + novaVenda.getId() + " " + novaVenda.getItens() + " " + novaVenda.getTotalVenda());
@@ -80,7 +100,8 @@ public class VendaService {
 
     public List<Venda> listarVendas() throws SQLException {
         try {
-            List<Venda> lista = repo.listarVendas();
+            List<Venda> lista = new ArrayList<>();
+            lista = repo.listarVendas();
             return lista;
         } catch (SQLException e) {
             System.err.println("Erro ao listar vendas no banco: " + e.getMessage());

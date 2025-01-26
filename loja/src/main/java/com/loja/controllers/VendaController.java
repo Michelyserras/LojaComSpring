@@ -26,9 +26,10 @@ public class VendaController {
     @PostMapping("/add")
     public ResponseEntity<?> adicionarVenda(@RequestBody VendaDto vendaDto) {
         try {
-            if(vendaDto.getItensDto().isEmpty())
-                throw new IllegalArgumentException("A lista de itens na venda não pode ser vazia");
-
+            if(vendaDto.getItensDto().isEmpty()){
+                throw new IllegalArgumentException("Insira pelo menos um item na lista para realizar uma venda");
+            }
+        
             Venda novaVenda = service.adicionarVenda(vendaDto.getItensDto());
             List<ItemVenda> itens = serviceItem.adicionarItem(novaVenda.getId(), novaVenda.getItens());
 

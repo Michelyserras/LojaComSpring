@@ -95,11 +95,14 @@ public class ItemDaoJDBC implements ItemDao{
 
     @Override
     public List<ItemVenda> listarItens() throws SQLException {
-        String query = "SELECT * FROM itensVenda";
         List<ItemVenda> itens = new ArrayList<>();
+
+        String query = "SELECT * FROM itensVenda";
+
         try (Connection conn = DB.getConnection();
              PreparedStatement ps = conn.prepareStatement(query);
              ResultSet rs = ps.executeQuery()) {
+
             while (rs.next()) {
                 ItemVenda itemVenda = new ItemVenda();
                 itemVenda.setProdutoId(rs.getInt("produto_id"));
@@ -141,4 +144,38 @@ public class ItemDaoJDBC implements ItemDao{
             System.err.println("Erro ao atualizar itemVenda: " + e.getMessage());
         }
     }
+
+    @Override
+    public List<ItemVenda> buscarItemPorVenda(int id) throws SQLException {
+        String query = "SELECT * FROM itensVenda WHERE venda_id = ?";
+        List<ItemVenda> itens = new ArrayList<>();
+
+        try(Connection conn = DB.getConnection();
+            PreparedStatement ps = conn.prepareStatement(query);){
+                ps.setInt(1, id);
+                try(ResultSet rs = ps.executeQuery()){
+
+                    while(rs.next()){
+                        ItemVenda item = new ItemVenda();
+                        item.setId(rs.getInt("id"));
+                        item.setProdutoId(rs.getInt("produto_id"));
+                        item.setVenda_id(rs.getInt("venda_id"));
+                        item.setQuantidade(rs.getInt("quantidade"));
+                        item.setNomeProduto(rs.getString("nome_produto"));
+                        item.setValorUnitario(rs.getDouble("valor_unitario"));
+
+                        itens.add(item);
+
+                    }
+
+                }
+                return itens;
+
+        }catch(SQLException e){
+            System.out.println("Erro ao buscar itemVenda: " + e.getMessage());
+        }
+        return null;
+    }
+
+    
 }
