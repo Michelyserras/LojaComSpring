@@ -29,7 +29,7 @@ public class VendaController {
             if(vendaDto.getItensDto().isEmpty()){
                 throw new IllegalArgumentException("Insira pelo menos um item na lista para realizar uma venda");
             }
-        
+            
             Venda novaVenda = service.adicionarVenda(vendaDto.getItensDto());
             List<ItemVenda> itens = serviceItem.adicionarItem(novaVenda.getId(), novaVenda.getItens());
 

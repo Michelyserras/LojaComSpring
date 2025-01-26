@@ -40,6 +40,11 @@ public class VendaService {
 
             for(ItemDto itemDto: itensDto) { //Calcula valor total da venda e transforma DTO na Entidade ItemVenda
                 produtoExistente = repoProduto.buscarProdutoPorId(itemDto.getProduto_id());
+
+                if(produtoExistente == null){
+                    throw new IllegalArgumentException("A venda não pode ser processada: o produto com o id = " + itemDto.getProduto_id() + " não existe.");
+                }
+
                 totalVenda += itemDto.getQuantidade() * produtoExistente.getPreco();
 
                 ItemVenda itemVenda = new ItemVenda(
@@ -58,13 +63,7 @@ public class VendaService {
             Venda venda = new Venda( //Instancia venda
                     itens,
                     totalVenda
-            );
-
-            /*essa função retorna a lista de itens de cada venda, 
-            depois de setar os itens da venda é possivel retornar a lista
-            e fazer os dados do item aparecer */
-
-            
+            );            
 
             novaVenda = repo.adicionarVenda(venda); //Adiciona a venda ao banco de dados
             System.out.println("Venda adicionada com sucesso." + novaVenda.getDataVenda() + " " + novaVenda.getId() + " " + novaVenda.getItens() + " " + novaVenda.getTotalVenda());
