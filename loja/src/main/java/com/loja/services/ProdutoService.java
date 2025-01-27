@@ -70,9 +70,14 @@ public class ProdutoService {
 
     public Produto buscarProduto(int id) throws SQLException {
         try {
+
+            if(id <= 0){
+                throw new IllegalArgumentException("O ID deve ser maior que zero.");
+            }
+
             Produto produtoExiste = repo.buscarProdutoPorId(id);
             if (produtoExiste == null) {
-                return null;
+                throw new IllegalArgumentException("Produto com id: " + id + "não existe.");
             }
             return produtoExiste;
         } catch (SQLException e) {

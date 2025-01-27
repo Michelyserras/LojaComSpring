@@ -141,18 +141,20 @@ public class ProdutoDaoJDBC implements ProdutoDao{
 
     @Override
     public Produto buscarProdutoPorId(int id) throws SQLException {
-        Produto produto = new Produto();
         String query = "SELECT * FROM produtos WHERE id = ?";
+        
         try(Connection conn = DB.getConnection();
             PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setLong(1, id);
             try(ResultSet rs = ps.executeQuery()) {
                 if(rs.next()){
+                    Produto produto = new Produto();
                     produto.setId(rs.getInt("id"));
                     produto.setNome(rs.getString("nome"));
                     produto.setPreco(rs.getDouble("preco"));
                     produto.setQuantidadeEstoque(rs.getInt("quantidade"));
                     produto.setDescricao(rs.getString("descricao"));
+                    return produto;
                 } else{
                     return null;
                 }
@@ -160,8 +162,7 @@ public class ProdutoDaoJDBC implements ProdutoDao{
         } catch (SQLException e) {
             System.err.println("Erro ao buscar produto por id" + e.getMessage());
         }
-        
-        return produto;
+        return null;
     }
     
     @Override

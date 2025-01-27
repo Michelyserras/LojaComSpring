@@ -20,43 +20,44 @@ public class ItemService {
     private ItemDaoJDBC repo;
     @Autowired
     private ProdutoDaoJDBC repoProduto;
+ 
 
     public List<ItemVenda> adicionarItem(int vendaId, List<ItemVenda> itens) throws SQLException {
         List<ItemVenda> novosItens = new ArrayList<>();
-        ItemVenda novoItemVenda = null;
-
+    
         try {
-            for(ItemVenda itemVenda : itens){
+            for (ItemVenda itemVenda : itens) {
+                if (itemVenda == null || itemVenda.getProduto_id() <= 0 || itemVenda.getQuantidade() <= 0) {
+                    throw new IllegalArgumentException("Um ou mais itens da lista estão inválidos. Verifique os campos obrigatórios.");
+                }
+    
                 Produto produtoExiste = repoProduto.buscarProdutoPorId(itemVenda.getProduto_id());
-
-                if(produtoExiste == null){
-                    throw new IllegalArgumentException("O produto de ID informado não existe");
+    
+                if (produtoExiste == null) {
+                    throw new IllegalArgumentException("O produto de ID " + itemVenda.getProduto_id() + " não existe.");
                 }
-
-                if(itemVenda.getQuantidade() <= 0){
-                    throw new IllegalArgumentException("A quantidade do itemVenda precisa ser maior que 0");
-                }
-
-                if(itemVenda.getQuantidade() > produtoExiste.getQuantidadeEstoque()){
-                    throw new IllegalArgumentException("Não há estoque suficiente");
-                }
-
-                itemVenda.setVenda_id(vendaId); //Seto o id da venda correspondente
+    
+                // Atualiza os dados do itemVenda
+                itemVenda.setVenda_id(vendaId);
                 itemVenda.setNomeProduto(produtoExiste.getNome());
                 itemVenda.setValorUnitario(produtoExiste.getPreco());
-
-                novoItemVenda = repo.adicionarItem(itemVenda); //Adiciono o itemVenda venda no banco de dados
+    
+                // Adiciona o item na venda
+                ItemVenda novoItemVenda = repo.adicionarItem(itemVenda);
                 novosItens.add(novoItemVenda);
-
-                produtoExiste.setQuantidadeEstoque(produtoExiste.getQuantidadeEstoque() - itemVenda.getQuantidade()); //Corrijo quantidade no estoque
-                repoProduto.atualizarProduto(produtoExiste); //Atualizo essa quantidade no banco de dados
+    
+                // Atualiza o estoque do produto
+                produtoExiste.setQuantidadeEstoque(produtoExiste.getQuantidadeEstoque() - itemVenda.getQuantidade());
+                repoProduto.atualizarProduto(produtoExiste);
             }
         } catch (SQLException e) {
-            System.err.println("Erro ao adicionar o item no banco: " + e.getMessage());
+            System.err.println("Erro ao adicionar os itens no banco: " + e.getMessage());
+            throw e; // Relança a exceção para que possa ser tratada em outro nível
         }
-
+    
         return novosItens;
     }
+    
 
     public List<ItemVenda> atualizarItens(List<ItemDto> itensDto, Venda venda) throws SQLException {
         List<ItemVenda> itens = new ArrayList<>();
@@ -99,4 +100,6 @@ public class ItemService {
         }
         return itens;
     }
+
+    
 }

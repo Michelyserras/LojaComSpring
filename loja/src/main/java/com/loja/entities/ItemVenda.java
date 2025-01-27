@@ -17,7 +17,7 @@ public class ItemVenda {
         this.valorUnitario = valorUnitario;
         this.venda_id = 0;
     }
-    
+
     public int getId() {
         return id;
     }
