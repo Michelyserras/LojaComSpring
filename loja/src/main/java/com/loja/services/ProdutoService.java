@@ -77,7 +77,7 @@ public class ProdutoService {
 
             Produto produtoExiste = repo.buscarProdutoPorId(id);
             if (produtoExiste == null) {
-                throw new IllegalArgumentException("Produto com id: " + id + "não existe.");
+                throw new IllegalArgumentException("Produto com id: " + id + " não existe.");
             }
             return produtoExiste;
         } catch (SQLException e) {

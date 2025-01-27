@@ -46,7 +46,7 @@ public class VendaService {
                 }
 
                 if(produtoExistente.getQuantidadeEstoque() < itemDto.getQuantidade()){
-                    throw new IllegalArgumentException("Estoque do produto = " + produtoExistente.getNome() +" é insuficiente.");
+                    throw new IllegalArgumentException("Estoque do produto " + produtoExistente.getNome() +" é insuficiente.");
                 }
 
                 if (itemDto.getQuantidade() <= 0) {
