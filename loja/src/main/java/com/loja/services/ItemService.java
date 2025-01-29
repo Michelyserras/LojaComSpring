@@ -20,6 +20,8 @@ public class ItemService {
     private ItemDaoJDBC repo;
     @Autowired
     private ProdutoDaoJDBC repoProduto;
+    @Autowired
+    private VendaDaoJDBC repoVenda;
  
 
     public List<ItemVenda> adicionarItem(int vendaId, List<ItemVenda> itens) throws SQLException {
@@ -61,7 +63,7 @@ public class ItemService {
 
     public List<ItemVenda> atualizarItens(List<ItemDto> itensDto, Venda venda) throws SQLException {
         List<ItemVenda> itens = new ArrayList<>();
-        Double valorTotal = 0.0;
+        double totalVenda = 0.0;
 
         for (ItemDto itemDto : itensDto) {
             Produto produtoExistente = repoProduto.buscarProdutoPorId(itemDto.getProdutoId());
@@ -83,6 +85,7 @@ public class ItemService {
                 repoProduto.atualizarProduto(produtoExistente);
 
                 repo.atualizarItem(itemVendaExistente);
+            
             } else {
                 // Cria um novo item
 
@@ -97,6 +100,10 @@ public class ItemService {
                 itens.add(novoItemVenda);
                 repo.adicionarItem(novoItemVenda);
             }
+            
+            totalVenda += itemVendaExistente.getQuantidade() * produtoExistente.getPreco();
+            venda.setTotalVenda(totalVenda);
+            repoVenda.atualizarVenda(venda);   
         }
         return itens;
     }

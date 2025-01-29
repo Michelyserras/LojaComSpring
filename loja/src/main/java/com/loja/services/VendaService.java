@@ -121,7 +121,7 @@ public class VendaService {
             Double valorTotal = 0.0;
             for(ItemVenda i : itens){
                 Produto produto = repoProduto.buscarProdutoPorId(i.getProdutoId());
-                valorTotal += i.getQuantidade() * i.getValorUnitario();
+                valorTotal += i.getQuantidade() * produto.getPreco();
             }
 
             Venda vendaAtualizada = new Venda(
@@ -130,6 +130,8 @@ public class VendaService {
             );
 
             vendaAtualizada.setId(id);
+            vendaAtualizada.setItens(item.buscarItemPorVenda(id));
+            
             repo.atualizarVenda(vendaAtualizada);
             return vendaAtualizada;
         } catch (SQLException e) {
