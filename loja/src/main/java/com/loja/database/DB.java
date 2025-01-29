@@ -2,6 +2,7 @@ package com.loja.database;
 
 import java.io.IOException;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Properties;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -40,13 +41,23 @@ public class DB {
         }
     }
 
-    //metodo para carregar as propriedades (dados) do banco
+    /*metodo para carregar as propriedades (dados) do banco
     private static Properties loadProperties(){
         try(FileInputStream fs = new FileInputStream("src/main/resources/application.properties")){ //buscando as propriedades do banco
             Properties props = new Properties();
             props.load(fs);
             return props;
         } catch (IOException e){
+            throw new DbException(e.getMessage());
+        }
+    }
+    */
+    private static Properties loadProperties(){
+        try (InputStream is = DB.class.getClassLoader().getResourceAsStream("application.properties")) {
+            Properties props = new Properties();
+            props.load(is);
+            return props;
+        } catch (IOException e) {
             throw new DbException(e.getMessage());
         }
     }

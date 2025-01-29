@@ -1,46 +1,141 @@
 package com.loja.controllers;
 
+import java.sql.SQLException;
+
+import java.util.*;
+
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.loja.entities.Produto;
 import com.loja.entities.dto.ProdutoDto;
 
 import com.loja.services.ProdutoService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
-
 
 @RestController
 @RequestMapping("/produtos")
 public class ProdutoController {
-    
+
     @Autowired
     public ProdutoService service;
 
-   @PostMapping("/add")
-   public ResponseEntity<ProdutoDto> postMethodName(@RequestBody Produto produto) {
-       try{
-              service.addProduto(produto.getNome(), produto.getPreco(), produto.getQuantidadeEstoque(), produto.getDescricao());
-              ProdutoDto produtoDto = new ProdutoDto(
-                     "Produto cadastrado com sucesso",
-                     produto.getId(),
-                     produto.getNome(), 
-                     produto.getPreco(), 
-                     produto.getQuantidadeEstoque(), 
-                     produto.getDescricao());
+    @PostMapping("/add")
+    public ResponseEntity<?> adicionarProduto(@RequestBody ProdutoDto produtoDto) {
+        try {
+            Produto novoProduto = service.addProduto(produtoDto.getNome(), produtoDto.getPreco(), produtoDto.getQuantidadeEstoque(), produtoDto.getDescricao());
 
-              return ResponseEntity.ok(produtoDto);
-       }catch(Exception e){
-              ProdutoDto produtoDto = new ProdutoDto("Erro ao cadastrar produto");
-              return ResponseEntity.badRequest().body(produtoDto);
-       }
-   }
-   
-    
+            Map<String, Object> response = new HashMap<>(); // HashMap para armazenar a resposta
+            response.put("Produto cadastrado com sucesso!", novoProduto);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (SQLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<?> buscarProdutoPorId(@RequestParam int id) {
+        try {
+            Produto produto = service.buscarProduto(id);
+            if (produto == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produto não encontrado.");
+            }
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("Produto encontrado: ", produto);
+
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+
+        } catch (SQLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/listar")
+    public ResponseEntity<?> listarProdutos() {
+        try {
+            List<Produto> produtos = service.listarProdutos();
+            if (produtos.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não há produtos cadastrados.");
+            }
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("Produtos Encontrados:", produtos);
+
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (SQLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/remover")
+    public ResponseEntity<?> removerProduto(@RequestParam int id) {
+        try {
+            Produto produtoRemovido = service.removerProduto(id);
+            if (produtoRemovido == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produto não encontrado.");
+            }
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("Produtos Excluido:", produtoRemovido);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (SQLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
+        }
+
+    }
+
+
+    @PutMapping("/atualizar")
+    public ResponseEntity<?> atualizarProduto(@RequestParam int id, @RequestBody ProdutoDto produtoDto) {
+        try {
+            Produto produtoExiste = service.buscarProduto(id);
+
+            if (produtoExiste == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produto não encontrado.");
+            }
+
+            Produto produtoAtualizado = service.atualizarProduto(produtoDto, id);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("Produto atualizado com sucesso!", produtoAtualizado);
+
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (SQLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
+        }
+    }
+
+
+    @DeleteMapping("/todos")
+    public ResponseEntity<?> limparLista() {
+        try {
+            boolean listaVazia = service.limparLista();
+            if (listaVazia) {
+                return ResponseEntity.status(HttpStatus.OK).body("Lista de produtos foi esvaziada.");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possível excluir os produtos.");
+            }
+        } catch (SQLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
+        }
+    }
 }

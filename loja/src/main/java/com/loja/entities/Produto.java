@@ -2,13 +2,13 @@ package com.loja.entities;
 
 public class Produto {
     
-    private Long id;
+    private int id;
     private String nome;
     private Double preco;
     private Integer quantidadeEstoque;
     private String descricao;
 
-    public Produto() {}
+    public Produto () {}
 
     public Produto(String nome, Double preco, Integer quantidadeEstoque, String descricao) {
         this.nome = nome;
@@ -17,11 +17,11 @@ public class Produto {
         this.descricao = descricao;
     }
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
