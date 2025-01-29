@@ -118,25 +118,32 @@ public class VendaService {
 
     public Venda atualizarVenda(List<ItemVenda> itens, int id) throws SQLException {
         try {
-            Double valorTotal = 0.0;
-            for(ItemVenda i : itens){
-                Produto produto = repoProduto.buscarProdutoPorId(i.getProdutoId());
+            double valorTotal = 0.0;
+    
+            for (ItemVenda i : itens) {
+                Produto produto = repoProduto.buscarProdutoPorId(i.getProduto_id());
+                if (produto == null) {
+                    throw new IllegalArgumentException("Produto não encontrado para o item: " + i.getProduto_id());
+                }
+    
+                // Certifica-se de que o valor unitário está correto
+                i.setValorUnitario(produto.getPreco());
+    
                 valorTotal += i.getQuantidade() * i.getValorUnitario();
             }
-
-            Venda vendaAtualizada = new Venda(
-                    itens,
-                    valorTotal
-            );
-
+    
+            Venda vendaAtualizada = new Venda(itens, valorTotal);
             vendaAtualizada.setId(id);
+    
+            // Atualiza a venda no banco de dados
             repo.atualizarVenda(vendaAtualizada);
             return vendaAtualizada;
         } catch (SQLException e) {
             System.err.println("Erro ao atualizar venda no banco: " + e.getMessage());
-            throw  e;
+            throw e;
         }
     }
+    
 
     public boolean limparListaDeVendas() throws SQLException {
         try {

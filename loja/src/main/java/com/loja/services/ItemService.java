@@ -60,32 +60,36 @@ public class ItemService {
     
 
     public List<ItemVenda> atualizarItens(List<ItemDto> itensDto, Venda venda) throws SQLException {
-        List<ItemVenda> itens = new ArrayList<>();
-        Double valorTotal = 0.0;
-
+        List<ItemVenda> itensAtualizados = new ArrayList<>();
+        
         for (ItemDto itemDto : itensDto) {
             Produto produtoExistente = repoProduto.buscarProdutoPorId(itemDto.getProdutoId());
             if (produtoExistente == null)
                 throw new IllegalArgumentException("Produto não encontrado");
-
+            
+            if (produtoExistente.getQuantidadeEstoque() < itemDto.getQuantidade()) {
+                throw new IllegalArgumentException("Estoque insuficiente para o produto: " + produtoExistente.getNome());
+            }
+        
+            
             // Verifica se o item já existe na venda
             ItemVenda itemVendaExistente = venda.getItens().stream()
                     .filter(i -> i.getProduto_id() == itemDto.getProduto_id())
                     .findFirst()
                     .orElse(null);
-
+    
             if (itemVendaExistente != null) {
-                // Atualiza o item existente e incrementa à quantidade
-
+                // Atualiza o item existente e incrementa a quantidade
                 itemVendaExistente.setQuantidade(itemVendaExistente.getQuantidade() + itemDto.getQuantidade());
-
+    
                 produtoExistente.setQuantidadeEstoque(produtoExistente.getQuantidadeEstoque() - itemDto.getQuantidade());
                 repoProduto.atualizarProduto(produtoExistente);
-
                 repo.atualizarItem(itemVendaExistente);
+    
+                // Adiciona à lista de retorno
+                itensAtualizados.add(itemVendaExistente);
             } else {
                 // Cria um novo item
-
                 ItemVenda novoItemVenda = new ItemVenda(
                         itemDto.getProduto_id(),
                         itemDto.getQuantidade(),
@@ -93,13 +97,14 @@ public class ItemService {
                         produtoExistente.getPreco()
                 );
                 novoItemVenda.setVenda_id(venda.getId());
-
-                itens.add(novoItemVenda);
+    
                 repo.adicionarItem(novoItemVenda);
+    
+                // Adiciona à lista de retorno
+                itensAtualizados.add(novoItemVenda);
             }
         }
-        return itens;
+        return itensAtualizados;
     }
-
     
 }
