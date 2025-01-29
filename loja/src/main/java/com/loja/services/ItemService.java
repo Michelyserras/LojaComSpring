@@ -105,12 +105,7 @@ public class ItemService {
                 // Adiciona à lista de retorno
                 itensAtualizados.add(novoItemVenda);
             }
-            
-            totalVenda += itemVendaExistente.getQuantidade() * produtoExistente.getPreco();
-            venda.setTotalVenda(totalVenda);
-            repoVenda.atualizarVenda(venda);   
         }
         return itensAtualizados;
     }
-    
 }
