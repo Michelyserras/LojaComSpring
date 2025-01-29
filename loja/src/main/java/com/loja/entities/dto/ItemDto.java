@@ -6,6 +6,11 @@ public class ItemDto {
 
     public ItemDto(){}
 
+    public ItemDto(int produto_id, int quantidade){
+        this.produto_id = produto_id;
+        this.quantidade = quantidade;
+    }
+
     public int getProdutoId() {
         return produto_id;
     }

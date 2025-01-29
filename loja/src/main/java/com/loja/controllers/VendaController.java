@@ -129,7 +129,6 @@ public class VendaController {
 
             List<ItemVenda> itens = serviceItem.atualizarItens(vendaDto.getItensDto(), vendaExiste);
             Venda vendaAtualizada = service.atualizarVenda(itens, id);
-
             VendaResp vendaFormatada = new VendaResp(vendaAtualizada);
             Map<String, Object> response = new HashMap<>();
             response.put("Venda atualizada com sucesso!", vendaFormatada);
