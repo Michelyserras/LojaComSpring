@@ -118,7 +118,8 @@ public class VendaService {
 
     public Venda atualizarVenda(List<ItemVenda> itens, int id) throws SQLException {
         try {
-            double valorTotal = 0.0;
+            Venda venda = repo.buscarVendaPorId(id);
+            double valorTotal = venda.getTotalVenda();
     
             for (ItemVenda i : itens) {
                 Produto produto = repoProduto.buscarProdutoPorId(i.getProduto_id());
