@@ -11,14 +11,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/vendas")
+@Tag(name = "Venda", description = "API para gerenciamento de vendas")
 public class VendaController {
     @Autowired
     private VendaService service;
@@ -26,9 +27,10 @@ public class VendaController {
     private ItemService serviceItem;
 
     @PostMapping("/add")
+    @Operation(summary = "Adicionar Venda", description = "Cadastra uma nova venda no sistema")
     public ResponseEntity<?> adicionarVenda(@RequestBody VendaDto vendaDto) {
         try {
-            if(vendaDto.getItensDto().isEmpty()){
+            if (vendaDto.getItensDto().isEmpty()) {
                 throw new IllegalArgumentException("Insira pelo menos um item na lista para realizar uma venda");
             }
             Venda novaVenda = service.adicionarVenda(vendaDto.getItensDto());
@@ -49,116 +51,93 @@ public class VendaController {
     }
 
     @GetMapping("/buscar")
+    @Operation(summary = "Buscar Venda por ID", description = "Retorna uma venda pelo seu ID")
     public ResponseEntity<?> buscarVendaPorId(@RequestParam int id) {
         try {
             Venda venda = service.buscarVenda(id);
-
             VendaResp vendaFormatada = new VendaResp(venda);
-            Map<String, Object> reponse = new HashMap<>();
-            reponse.put("Venda encontrada: ", vendaFormatada);
-
-            return ResponseEntity.status(HttpStatus.OK).body(reponse);
+            Map<String, Object> response = new HashMap<>();
+            response.put("Venda encontrada: ", vendaFormatada);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (SQLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
         }
     }
 
     @GetMapping("/listar")
+    @Operation(summary = "Listar Vendas", description = "Retorna uma lista de todas as vendas cadastradas")
     public ResponseEntity<?> listarVendas() {
         try {
             List<Venda> vendas = service.listarVendas();
-            if(vendas.isEmpty()){
+            if (vendas.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não há vendas cadastradas.");
             }
-
             List<VendaResp> vendasFormatadas = new ArrayList<>();
-            for(Venda venda: vendas){
-                VendaResp novaVenda = new VendaResp(venda);
-                vendasFormatadas.add(novaVenda); 
+            for (Venda venda : vendas) {
+                vendasFormatadas.add(new VendaResp(venda));
             }
-
             Map<String, Object> response = new HashMap<>();
             response.put("Vendas encontradas: ", vendasFormatadas);
-
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (SQLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
         }
     }
 
     @DeleteMapping("/remover")
+    @Operation(summary = "Remover Venda", description = "Exclui uma venda pelo seu ID")
     public ResponseEntity<?> removerVenda(@RequestParam int id) {
         try {
             Venda venda = service.buscarVenda(id);
-            if(venda == null) {
+            if (venda == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Venda não encontrada.");
             }
-
             Venda vendaRemovida = service.removerVenda(venda);
             VendaResp vendaFormatada = new VendaResp(vendaRemovida);
-
             Map<String, Object> response = new HashMap<>();
-            response.put("Venda excluida: ", vendaFormatada);
+            response.put("Venda excluída: ", vendaFormatada);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (SQLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
-        }    }
+        }
+    }
 
     @PutMapping("/atualizar")
+    @Operation(summary = "Atualizar Venda", description = "Atualiza uma venda existente pelo ID")
     public ResponseEntity<?> atualizarVenda(@RequestParam int id, @RequestBody VendaDto vendaDto) {
         try {
-            if(vendaDto == null || vendaDto.getItensDto().isEmpty())
+            if (vendaDto == null || vendaDto.getItensDto().isEmpty()) {
                 throw new IllegalArgumentException("É necessário atualizar pelo menos 1 campo da venda");
-
+            }
             Venda vendaExiste = service.buscarVenda(id);
-            if(vendaExiste == null){
+            if (vendaExiste == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Venda não encontrada.");
             }
-
             List<ItemVenda> itens = serviceItem.atualizarItens(vendaDto.getItensDto(), vendaExiste);
             Venda vendaAtualizada = service.atualizarVenda(itens, id);
-
             VendaResp vendaFormatada = new VendaResp(vendaAtualizada);
             Map<String, Object> response = new HashMap<>();
             response.put("Venda atualizada com sucesso!", vendaFormatada);
-
             return ResponseEntity.status(HttpStatus.OK).body(response);
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
         }
     }
 
     @DeleteMapping("/todos")
+    @Operation(summary = "Remover Todas as Vendas", description = "Remove todas as vendas cadastradas")
     public ResponseEntity<?> limparLista() {
         try {
             boolean listaVazia = service.limparListaDeVendas();
-            if(listaVazia) {
+            if (listaVazia) {
                 return ResponseEntity.status(HttpStatus.OK).body("Lista de vendas foi esvaziada.");
-            } else{
+            } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não há vendas cadastradas");
             }
         } catch (SQLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
         }
     }
 }

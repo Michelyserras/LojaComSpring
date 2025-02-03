@@ -1,7 +1,6 @@
 package com.loja.controllers;
 
 import java.sql.SQLException;
-
 import java.util.*;
 
 import org.springframework.http.*;
@@ -10,26 +9,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.loja.entities.Produto;
 import com.loja.entities.dto.ProdutoDto;
-
 import com.loja.services.ProdutoService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/produtos")
+@Tag(name = "Produto", description = "API para gerenciamento de produtos")
 public class ProdutoController {
 
     @Autowired
     public ProdutoService service;
 
     @PostMapping("/add")
+    @Operation(summary = "Adicionar Produto", description = "Cadastra um novo produto no sistema")
     public ResponseEntity<?> adicionarProduto(@RequestBody ProdutoDto produtoDto) {
         try {
             Produto novoProduto = service.addProduto(produtoDto.getNome(), produtoDto.getPreco(), produtoDto.getQuantidadeEstoque(), produtoDto.getDescricao());
 
-            Map<String, Object> response = new HashMap<>(); // HashMap para armazenar a resposta
+            Map<String, Object> response = new HashMap<>();
             response.put("Produto cadastrado com sucesso!", novoProduto);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (SQLException e) {
@@ -40,6 +42,7 @@ public class ProdutoController {
     }
 
     @GetMapping("/buscar")
+    @Operation(summary = "Buscar Produto por ID", description = "Retorna um produto pelo seu ID")
     public ResponseEntity<?> buscarProdutoPorId(@RequestParam int id) {
         try {
             Produto produto = service.buscarProduto(id);
@@ -48,10 +51,9 @@ public class ProdutoController {
             }
 
             Map<String, Object> response = new HashMap<>();
-            response.put("Produto encontrado: ", produto);
+            response.put("Produto encontrado:", produto);
 
             return ResponseEntity.status(HttpStatus.OK).body(response);
-
         } catch (SQLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
         } catch (Exception e) {
@@ -60,6 +62,7 @@ public class ProdutoController {
     }
 
     @GetMapping("/listar")
+    @Operation(summary = "Listar Produtos", description = "Retorna uma lista de todos os produtos cadastrados")
     public ResponseEntity<?> listarProdutos() {
         try {
             List<Produto> produtos = service.listarProdutos();
@@ -79,6 +82,7 @@ public class ProdutoController {
     }
 
     @DeleteMapping("/remover")
+    @Operation(summary = "Remover Produto", description = "Exclui um produto pelo seu ID")
     public ResponseEntity<?> removerProduto(@RequestParam int id) {
         try {
             Produto produtoRemovido = service.removerProduto(id);
@@ -87,22 +91,20 @@ public class ProdutoController {
             }
 
             Map<String, Object> response = new HashMap<>();
-            response.put("Produtos Excluido:", produtoRemovido);
+            response.put("Produto Excluído:", produtoRemovido);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (SQLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro no banco de dados: " + e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro inesperado: " + e.getMessage());
         }
-
     }
 
-
     @PutMapping("/atualizar")
+    @Operation(summary = "Atualizar Produto", description = "Atualiza um produto existente pelo ID")
     public ResponseEntity<?> atualizarProduto(@RequestParam int id, @RequestBody ProdutoDto produtoDto) {
         try {
             Produto produtoExiste = service.buscarProduto(id);
-
             if (produtoExiste == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produto não encontrado.");
             }
@@ -122,8 +124,8 @@ public class ProdutoController {
         }
     }
 
-
     @DeleteMapping("/todos")
+    @Operation(summary = "Remover Todos os Produtos", description = "Remove todos os produtos cadastrados")
     public ResponseEntity<?> limparLista() {
         try {
             boolean listaVazia = service.limparLista();

@@ -2,10 +2,12 @@ com\loja\dao\VendaDaoJDBC.class
 com\loja\entities\dto\ProdutoDto.class
 com\loja\dao\ProdutoDaoJDBC.class
 com\loja\database\DB.class
+com\loja\entities\response\ItemResp.class
 com\loja\LojaApplication.class
 com\loja\controllers\ProdutoController.class
 com\loja\dao\ItemDaoJDBC.class
 com\loja\database\DbException.class
+com\loja\entities\response\VendaResp.class
 com\loja\entities\dto\ItemDto.class
 com\loja\entities\dto\VendaDto.class
 com\loja\entities\ItemVenda.class
